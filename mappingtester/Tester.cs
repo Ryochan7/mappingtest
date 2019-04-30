@@ -8,7 +8,7 @@ using Nefarius.ViGEm.Client.Targets.Xbox360;
 
 namespace mappingtester
 {
-    class Tester
+    public class Tester
     {
         public enum StickAlias : uint
         {
@@ -19,7 +19,11 @@ namespace mappingtester
         public enum AxisAlias: uint
         {
             LeftTrigger,
-            RightTrigger
+            RightTrigger,
+            LeftX,
+            LeftY,
+            RightX,
+            RightY
         }
 
         public enum ButtonAlias : uint
@@ -54,6 +58,7 @@ namespace mappingtester
         //private DualShock4Report reportshock = new DualShock4Report();
         public Xbox360Report reportx = new Xbox360Report();
         private ushort tempbuttons;
+        private Dictionary<ushort, uint> keysCount = new Dictionary<ushort, uint>();
 
         private StickTranslate testLeftStick = new StickTranslate(StickAlias.LeftStick, 0, 255);
         private StickTranslate testRightStick = new StickTranslate(StickAlias.RightStick, 0, 255);
@@ -61,7 +66,34 @@ namespace mappingtester
         private TriggerTranslate testLT = new TriggerTranslate(AxisAlias.LeftTrigger, 0, 255);
         private TriggerTranslate testRT = new TriggerTranslate(AxisAlias.RightTrigger, 0, 255);
 
-        private ButtonTranslate testABtn = new ButtonTranslate(ButtonAlias.A, (uint)Xbox360Buttons.A);
+        //private ButtonTranslate testABtn = new ButtonTranslate(ButtonAlias.A, (uint)Xbox360Buttons.A);
+        //private VirtButtonBinding bitchLasagna = 
+        /*private ButtonGenTranslate testABtn = new ButtonGenTranslate(new VirtButtonBinding(VirtButtonBinding.BindingType.Keyboard)
+        {
+            BindCode = (uint)0x41
+        });
+        */
+
+        /*private ButtonGenTranslate testABtn = new ButtonGenTranslate(new VirtButtonBinding(VirtButtonBinding.BindingType.MouseButton)
+        {
+            BindCode = InputMethods.MOUSEEVENTF_LEFTDOWN,
+            BindCodeUp = InputMethods.MOUSEEVENTF_LEFTUP,
+        });
+        */
+
+        /*private ButtonGenTranslate testABtn = new ButtonGenTranslate(new VirtButtonBinding(VirtButtonBinding.BindingType.JoyButton)
+        {
+            JoyBId = ButtonAlias.B,
+            JoyBtnValue = (uint)Xbox360Buttons.B,
+        });
+        */
+
+        private ButtonGenTranslate testABtn = new ButtonGenTranslate(new VirtButtonBinding(VirtButtonBinding.BindingType.JoyAxis)
+        {
+            JoyAId = AxisAlias.LeftX,
+            JoyAxisValue = 1.0,
+        });
+
         private ButtonTranslate testBBtn = new ButtonTranslate(ButtonAlias.B, (uint)Xbox360Buttons.B);
         private ButtonTranslate testXBtn = new ButtonTranslate(ButtonAlias.X, (uint)Xbox360Buttons.X);
         private ButtonTranslate testYBtn = new ButtonTranslate(ButtonAlias.Y, (uint)Xbox360Buttons.Y);
@@ -76,6 +108,11 @@ namespace mappingtester
         private ButtonTranslate testRThumbBtn = new ButtonTranslate(ButtonAlias.RightThumb, (uint)Xbox360Buttons.RightThumb);
 
         private DPadTranslate testDpad = new DPadTranslate();
+
+        private double mouseX = 0;
+        private double mouseY = 0;
+        private double mouseXRemainder = 0.0;
+        private double mouseYRemainder = 0.0;
 
         public void Start()
         {
@@ -220,6 +257,7 @@ namespace mappingtester
             }
 
             reportx.Buttons = tempbuttons;
+            GenerateMouseEvent();
         }
 
         public void SetStickEvent(StickAlias id, double xNorm, double yNorm)
@@ -257,6 +295,18 @@ namespace mappingtester
                 case AxisAlias.RightTrigger:
                     reportx.RightTrigger = (byte)(axisNorm * 255);
                     break;
+                case AxisAlias.LeftX:
+                    reportx.LeftThumbX = (short)(axisNorm * (axisNorm < 0.0 ? 32768 : 32767));
+                    break;
+                case AxisAlias.LeftY:
+                    reportx.LeftThumbY = (short)(axisNorm * (axisNorm < 0.0 ? 32767 : 32768));
+                    break;
+                case AxisAlias.RightX:
+                    reportx.RightThumbX = (short)(axisNorm * (axisNorm < 0.0 ? 32768 : 32767));
+                    break;
+                case AxisAlias.RightY:
+                    reportx.RightThumbY = (short)(axisNorm * (axisNorm < 0.0 ? 32767 : 32768));
+                    break;
                 default:
                     break;
             }
@@ -287,6 +337,76 @@ namespace mappingtester
                 {
                     tempbuttons |= (ushort)Xbox360Buttons.Right;
                 }
+            }
+        }
+
+        public void SetKeyEvent(ushort value, bool pressed)
+        {
+            keysCount.TryGetValue(value, out uint count);
+            if (count == 0 && pressed)
+            {
+                keysCount[value] = count + 1;
+                InputMethods.performKeyPress(value);
+            }
+            else if (count == 1 && !pressed)
+            {
+                InputMethods.performKeyRelease(value);
+                keysCount.Remove(value);
+            }
+            else if (!pressed)
+            {
+                keysCount[value] = count - 1;
+            }
+        }
+
+        public void SetMouseButton(uint value, bool pressed)
+        {
+            InputMethods.MouseEvent(value);
+        }
+
+        public void SetMouseCusorMovement(double x, double y)
+        {
+            mouseX = x;
+            mouseY = y;
+            //InputMethods.MoveCursorBy(x, y);
+        }
+
+        public void SetAbsMousePosition(double xNorm, double yNorm)
+        {
+
+        }
+
+        private static double remainderCutoff(double dividend, double divisor)
+        {
+            return dividend - (divisor * (int)(dividend / divisor));
+        }
+
+        public void GenerateMouseEvent()
+        {
+            if (mouseX != 0.0 && mouseY != 0.0)
+            {
+                if ((mouseX > 0.0 && mouseXRemainder > 0.0) || (mouseX < 0.0 && mouseXRemainder < 0.0))
+                {
+                    mouseX += mouseXRemainder;
+                }
+
+                double mouseXTemp = mouseX - (remainderCutoff(mouseX * 1000.0, 1.0) / 1000.0);
+                int mouseXInt = (int)(mouseXTemp);
+                mouseXRemainder = mouseXTemp - mouseXInt;
+
+                if ((mouseY > 0.0 && mouseYRemainder > 0.0) || (mouseY < 0.0 && mouseYRemainder < 0.0))
+                {
+                    mouseY += mouseYRemainder;
+                }
+
+                double mouseYTemp = mouseX - (remainderCutoff(mouseY * 1000.0, 1.0) / 1000.0);
+                int mouseYInt = (int)(mouseYTemp);
+                mouseYRemainder = mouseYTemp - mouseYInt;
+                InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
+            }
+            else
+            {
+                mouseXRemainder = mouseYRemainder = 0.0;
             }
         }
 

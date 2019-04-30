@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace mappingtester
 {
-    class DPadTranslate
+    public class DPadTranslate
     {
         public enum DpadDirections : uint
         {
