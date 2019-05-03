@@ -4,7 +4,7 @@ namespace mappingtester
 {
     class StickMouse
     {
-        private const int MOUSESPEEDFACTOR = 48;
+        private const int MOUSESPEEDFACTOR = 20;
         private const double MOUSESTICKOFFSET = 0.0495;
 
         private int axisMax;
@@ -32,12 +32,12 @@ namespace mappingtester
             else
                 axisMid = mid;
 
-            deadZone = 0.1;
+            deadZone = 0.05;
             maxZone = 1.0;
             antiDeadZone = 0.0;
             circleDead = true;
             runInter = ShouldInterpolate();
-            mouseXSpeed = mouseYSpeed = 20;
+            mouseXSpeed = mouseYSpeed = 50;
         }
 
         public void Event(Tester mapper, int axisXVal, int axisYVal)
@@ -63,15 +63,17 @@ namespace mappingtester
                 yNorm = (axisYDir / (double)maxDirY) * (yNegative ? -1.0 : 1.0);
             }
 
-            /*double tempMouseOffsetX = 0.0, tempMouseOffsetY = 0.0;
-            double xUnit = Math.Abs(xNorm);
-            double yUnit = Math.Abs(yNorm);
-            tempMouseOffsetX = xUnit * MOUSESTICKOFFSET;
-            tempMouseOffsetY = yUnit * MOUSESTICKOFFSET;
-            double mouseX = ((mouseXSpeed * MOUSESPEEDFACTOR * (timeElapsed * 0.001)) - tempMouseOffsetX) * xUnit + tempMouseOffsetX;
-            double mouseY = ((mouseYSpeed * MOUSESPEEDFACTOR * (timeElapsed * 0.001)) - tempMouseOffsetY) * yUnit + tempMouseOffsetY;
-            mapper.SetMouseCusorMovement(mouseX, mouseY);
-            */
+            if (xNorm != 0.0 || yNorm != 0.0)
+            {
+                double xUnit = Math.Abs(xNorm);
+                double yUnit = Math.Abs(yNorm);
+                double tempMouseOffsetX = xUnit * MOUSESTICKOFFSET;
+                double tempMouseOffsetY = yUnit * MOUSESTICKOFFSET;
+                double mouseX = ((mouseXSpeed * MOUSESPEEDFACTOR * mapper.timeElapsed) - tempMouseOffsetX) * xNorm + (tempMouseOffsetX * (xNorm > 0.0 ? 1.0 : -1.0));
+                double mouseY = ((mouseYSpeed * MOUSESPEEDFACTOR * mapper.timeElapsed) - tempMouseOffsetY) * yNorm + (tempMouseOffsetY * (yNorm > 0.0 ? 1.0 : -1.0));
+                //Console.WriteLine("X{0} {1} Y{2} {3} {4}", mouseX, xNorm, mouseY, yNorm, mapper.timeElapsed);
+                mapper.SetMouseCusorMovement(mouseX, mouseY);
+            }
         }
 
         private void RunModifiers(int axisXVal, int axisYVal,

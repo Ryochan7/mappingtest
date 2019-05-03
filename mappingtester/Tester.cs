@@ -61,7 +61,8 @@ namespace mappingtester
         private Dictionary<ushort, uint> keysCount = new Dictionary<ushort, uint>();
 
         private StickTranslate testLeftStick = new StickTranslate(StickAlias.LeftStick, 0, 255);
-        private StickTranslate testRightStick = new StickTranslate(StickAlias.RightStick, 0, 255);
+        //private StickTranslate testRightStick = new StickTranslate(StickAlias.RightStick, 0, 255);
+        private StickMouse testRightStick = new StickMouse(0, 255);
 
         private TriggerTranslate testLT = new TriggerTranslate(AxisAlias.LeftTrigger, 0, 255);
         private TriggerTranslate testRT = new TriggerTranslate(AxisAlias.RightTrigger, 0, 255);
@@ -113,6 +114,7 @@ namespace mappingtester
         private double mouseY = 0;
         private double mouseXRemainder = 0.0;
         private double mouseYRemainder = 0.0;
+        public double timeElapsed;
 
         public void Start()
         {
@@ -169,15 +171,17 @@ namespace mappingtester
         public void Mapping(DS4Windows.DS4State current,
             DS4Windows.DS4State previous)
         {
+            timeElapsed = current.elapsedTime;
+
             if (current.LX != previous.LX || current.LY != previous.LY)
             {
                 testLeftStick.Event(this, current.LX, current.LY);
             }
 
-            if (current.RX != previous.RX || current.RY != previous.RY)
-            {
+            //if (current.RX != previous.RX || current.RY != previous.RY)
+            //{
                 testRightStick.Event(this, current.RX, current.RY);
-            }
+            //}
 
             if (current.L2 != previous.L2)
             {
@@ -368,7 +372,6 @@ namespace mappingtester
         {
             mouseX = x;
             mouseY = y;
-            //InputMethods.MoveCursorBy(x, y);
         }
 
         public void SetAbsMousePosition(double xNorm, double yNorm)
@@ -383,11 +386,15 @@ namespace mappingtester
 
         public void GenerateMouseEvent()
         {
-            if (mouseX != 0.0 && mouseY != 0.0)
+            if (mouseX != 0.0 || mouseY != 0.0)
             {
                 if ((mouseX > 0.0 && mouseXRemainder > 0.0) || (mouseX < 0.0 && mouseXRemainder < 0.0))
                 {
                     mouseX += mouseXRemainder;
+                }
+                else
+                {
+                    mouseXRemainder = 0.0;
                 }
 
                 double mouseXTemp = mouseX - (remainderCutoff(mouseX * 1000.0, 1.0) / 1000.0);
@@ -398,8 +405,12 @@ namespace mappingtester
                 {
                     mouseY += mouseYRemainder;
                 }
+                else
+                {
+                    mouseYRemainder = 0.0;
+                }
 
-                double mouseYTemp = mouseX - (remainderCutoff(mouseY * 1000.0, 1.0) / 1000.0);
+                double mouseYTemp = mouseY - (remainderCutoff(mouseY * 1000.0, 1.0) / 1000.0);
                 int mouseYInt = (int)(mouseYTemp);
                 mouseYRemainder = mouseYTemp - mouseYInt;
                 InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
@@ -408,6 +419,8 @@ namespace mappingtester
             {
                 mouseXRemainder = mouseYRemainder = 0.0;
             }
+
+            mouseX = mouseY = 0.0;
         }
 
         public void Stop()
