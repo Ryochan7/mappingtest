@@ -43,5 +43,10 @@ namespace mappingtester
                 }
             }
         }
+
+        public void Release(Tester mapper)
+        {
+
+        }
     }
 }

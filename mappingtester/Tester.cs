@@ -8,6 +8,13 @@ using Nefarius.ViGEm.Client.Targets.Xbox360;
 
 namespace mappingtester
 {
+    public class IntermediateState
+    {
+        public bool[] buttons = new bool[(int)Tester.ButtonAlias.Right];
+        public static DS4Windows.DS4State bacon = null;
+        public ref bool A => ref bacon.Cross;
+    }
+
     public class Tester
     {
         public enum StickAlias : uint
@@ -48,6 +55,22 @@ namespace mappingtester
         public enum DPadAlias : uint
         {
             Dpad1
+        }
+
+        [Flags]
+        public enum TestButtons : uint
+        {
+            None = 0x0,
+            A = 1 << 0,
+            B = 1 << 2,
+            X = 1 << 3,
+            Y = 1 << 4,
+            LB = 1 << 5,
+            RB = 1 << 6,
+            Back = 1 << 7,
+            Start = 1 << 8,
+            LSClick = 1 << 9,
+            RSClick = 1 << 10,
         }
 
         private Thread vbusThr;
@@ -110,11 +133,22 @@ namespace mappingtester
 
         private DPadTranslate testDpad = new DPadTranslate();
 
+        private ActionSet testSet = new ActionSet();
+
         private double mouseX = 0;
         private double mouseY = 0;
         private double mouseXRemainder = 0.0;
         private double mouseYRemainder = 0.0;
+
+        private double mouseWheelX = 0.0;
+        private double mouseWheelY = 0.0;
+        private double mouseWheelXRemainder = 0.0;
+        private double mouseWheelYRemainder = 0.0;
+
         public double timeElapsed;
+        //private IntermediateState arbys = new IntermediateState();
+        private TestButtons testham = TestButtons.None;
+        private Profile testProf;
 
         public void Start()
         {
@@ -145,6 +179,9 @@ namespace mappingtester
             contThr.Start();
             contThr.Join();
 
+            testProf = new Profile("");
+            testProf.Load();
+
             IEnumerable<DS4Windows.DS4Device> devices =
                 DS4Windows.DS4Devices.getDS4Controllers();
             int ind = 0;
@@ -172,18 +209,127 @@ namespace mappingtester
             DS4Windows.DS4State previous)
         {
             timeElapsed = current.elapsedTime;
+            ActionSet ass = testProf.currentActionSet;
 
             if (current.LX != previous.LX || current.LY != previous.LY)
             {
-                testLeftStick.Event(this, current.LX, current.LY);
+                ass.testLeftStick.Prepare(this, current.LX, current.LY);
             }
 
-            //if (current.RX != previous.RX || current.RY != previous.RY)
-            //{
-                testRightStick.Event(this, current.RX, current.RY);
-            //}
+            if (ass.testLeftStick.activeEvent)
+                ass.testLeftStick.Event(this);
+
+            if (current.RX != previous.RX || current.RY != previous.RY)
+            {
+                ass.testRightStick.Prepare(this, current.RX, current.RY);
+            }
+            if (ass.testRightStick.activeEvent)
+                ass.testRightStick.Event(this);
+
+            if (current.Cross != previous.Cross)
+            {
+                ass.testABtn.Prepare(this, current.Cross);
+            }
+            if (ass.testABtn.activeEvent)
+                ass.testABtn.Event(this);
+
+            if (current.Circle != previous.Circle)
+            {
+                ass.testBBtn.Prepare(this, current.Circle);
+            }
+            if (ass.testBBtn.activeEvent)
+                ass.testBBtn.Event(this);
+
+            if (current.Square != previous.Square)
+            {
+                ass.testXBtn.Prepare(this, current.Square);
+            }
+            if (ass.testXBtn.activeEvent)
+                ass.testXBtn.Event(this);
+
+            if (current.Triangle != previous.Triangle)
+            {
+                ass.testYBtn.Prepare(this, current.Triangle);
+            }
+            if (ass.testYBtn.activeEvent)
+                ass.testYBtn.Event(this);
+
+            if (current.Share != previous.Share)
+            {
+                ass.testBackBtn.Prepare(this, current.Share);
+            }
+            if (ass.testBackBtn.activeEvent)
+                ass.testBackBtn.Event(this);
+
+            if (current.Options != previous.Options)
+            {
+                ass.testStartBtn.Prepare(this, current.Options);
+            }
+            if (ass.testStartBtn.activeEvent)
+                ass.testStartBtn.Event(this);
 
             if (current.L2 != previous.L2)
+            {
+                ass.testLT.Prepare(this, current.L2);
+            }
+            if (ass.testLT.activeEvent)
+                ass.testLT.Event(this);
+
+            if (current.R2 != previous.R2)
+            {
+                ass.testRT.Prepare(this, current.R2);
+            }
+            if (ass.testRT.activeEvent)
+                ass.testRT.Event(this);
+
+            if (current.L1 != previous.L1)
+            {
+                ass.testLBBtn.Prepare(this, current.L1);
+            }
+            if (ass.testLBBtn.activeEvent)
+                ass.testLBBtn.Event(this);
+
+            if (current.R1 != previous.R1)
+            {
+                ass.testRBBtn.Prepare(this, current.R1);
+            }
+            if (ass.testRBBtn.activeEvent)
+                ass.testRBBtn.Event(this);
+
+            if (current.L3 != previous.L3)
+            {
+                ass.testLThumbBtn.Prepare(this, current.L3);
+            }
+            if (ass.testLThumbBtn.activeEvent)
+                ass.testLThumbBtn.Event(this);
+
+            if (current.R3 != previous.R3)
+            {
+                ass.testRThumbBtn.Prepare(this, current.R3);
+            }
+            if (ass.testRThumbBtn.activeEvent)
+                ass.testRThumbBtn.Event(this);
+
+            unchecked
+            {
+                DPadTranslate.DpadDirections currentDpad =
+                DPadTranslate.DpadDirections.Centered;
+
+                if (current.DpadUp)
+                    currentDpad |= DPadTranslate.DpadDirections.Up;
+                if (current.DpadRight)
+                    currentDpad |= DPadTranslate.DpadDirections.Right;
+                if (current.DpadDown)
+                    currentDpad |= DPadTranslate.DpadDirections.Down;
+                if (current.DpadLeft)
+                    currentDpad |= DPadTranslate.DpadDirections.Left;
+
+                ass.testDpad.Prepare(this, currentDpad);
+                if (ass.testDpad.activeEvent)
+                    ass.testDpad.Event(this);
+            }
+
+            /*if (current.L2 != previous.L2)
             {
                 testLT.Event(this, current.L2);
             }
@@ -259,9 +405,16 @@ namespace mappingtester
 
                 testDpad.Event(this, currentDpad);
             }
+            */
 
             reportx.Buttons = tempbuttons;
             GenerateMouseEvent();
+        }
+
+        private void PopIS(DS4Windows.DS4State current)
+        {
+            //arbys.buttons[(int)ButtonAlias.A] = current.Cross;
+            if (current.Cross) testham |= TestButtons.A;
         }
 
         public void SetStickEvent(StickAlias id, double xNorm, double yNorm)
@@ -374,6 +527,12 @@ namespace mappingtester
             mouseY = y;
         }
 
+        public void SetMouseWheel(double vertical, double horizontal)
+        {
+            mouseWheelY = vertical;
+            mouseWheelX = horizontal;
+        }
+
         public void SetAbsMousePosition(double xNorm, double yNorm)
         {
 
@@ -421,6 +580,12 @@ namespace mappingtester
             }
 
             mouseX = mouseY = 0.0;
+        }
+
+        private void GenerateWheelEvent()
+        {
+            mouseWheelXRemainder = mouseWheelYRemainder = 0.0;
+            mouseWheelX = mouseWheelY = 0.0;
         }
 
         public void Stop()

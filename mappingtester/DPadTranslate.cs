@@ -21,18 +21,35 @@ namespace mappingtester
         }
 
         private DpadDirections previous = DpadDirections.Centered;
+        private DpadDirections current = DpadDirections.Centered;
+        public bool IsActive => current != DpadDirections.Centered;
+        public bool activeEvent;
 
         public DPadTranslate()
         {
-
         }
 
-        public void Event(Tester mapper, DpadDirections value)
+        public void Prepare(Tester mapper, DpadDirections value)
         {
-            if (value != previous)
+            if (value != current)
             {
-                previous = value;
-                mapper.SetDPadEvent(value);
+                previous = current;
+                current = value;
+                activeEvent = true;
+            }
+        }
+
+        public void Event(Tester mapper)
+        {
+            mapper.SetDPadEvent(current);
+            if (current == DpadDirections.Centered) activeEvent = false;
+        }
+
+        public void Release(Tester mapper)
+        {
+            if (current != DpadDirections.Centered)
+            {
+                mapper.SetDPadEvent(DpadDirections.Centered);
             }
         }
     }

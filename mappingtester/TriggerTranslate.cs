@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace mappingtester
 {
-    class TriggerTranslate
+    public class TriggerTranslate
     {
         public enum ActivateStyle : uint
         {
@@ -26,6 +26,8 @@ namespace mappingtester
         private TriggerButton fullPullBtn;
         private ActivateStyle activateMode;
         private TriggerButton activeButton;
+        private TriggerButton previousButton;
+        private bool releaseButton;
         //private StopWatch activateTimeDelay;
 
         private int softPullPoint;
@@ -36,6 +38,9 @@ namespace mappingtester
         private int _analogDeadZone;
         private double analogMaxZone;
         private int _analogMaxZone;
+
+        private int currentValue;
+        public bool activeEvent = false;
 
         private bool runInter = false;
 
@@ -58,20 +63,18 @@ namespace mappingtester
             runInter = ShouldInterpolate();
         }
 
-        public void Event(Tester mapper, int value)
+        public void Prepare(Tester mapper, int value)
         {
             if (useAnalog)
             {
                 if (runInter)
                 {
                     Modifiers(value, out int temp, out double axisNorm);
-                    value = temp;
-                    mapper.SetAxisEvent(id, axisNorm);
+                    value = currentValue = temp;
                 }
                 else
                 {
-                    double axisNorm = value / (double)max;
-                    mapper.SetAxisEvent(id, axisNorm);
+                    currentValue = value;
                 }
             }
             else
@@ -80,10 +83,14 @@ namespace mappingtester
                 {
                     if (value == max && activeButton != fullPullBtn)
                     {
+                        releaseButton = true;
+                        previousButton = activeButton;
                         activeButton = fullPullBtn;
                     }
                     else if (activeButton != softPullBtn)
                     {
+                        releaseButton = true;
+                        previousButton = activeButton;
                         activeButton = softPullBtn;
                     }
 
@@ -91,9 +98,32 @@ namespace mappingtester
                 }
                 else if (activeButton != null)
                 {
-                    activeButton.Event(mapper, value);
+                    releaseButton = true;
+                    previousButton = activeButton;
                     activeButton = null;
                 }
+            }
+
+            activeEvent = true;
+        }
+
+        public void Event(Tester mapper)
+        {
+            if (useAnalog)
+            {
+                double axisNorm = currentValue / (double)max;
+                mapper.SetAxisEvent(id, axisNorm);
+            }
+            else
+            {
+                if (releaseButton)
+                {
+                    previousButton.Event(mapper, currentValue);
+                    previousButton = null;
+                }
+
+                if (activeButton != null)
+                    activeButton.Event(mapper, currentValue);
             }
         }
 
@@ -115,9 +145,11 @@ namespace mappingtester
             axisNorm = axisValue / (double)_analogMaxZone;
         }
 
-        private void DetermineActiveButton(int value)
+        public void Release()
         {
-
+            previousButton = null;
+            activeButton = null;
+            activeEvent = false;
         }
 
         private bool ShouldInterpolate()

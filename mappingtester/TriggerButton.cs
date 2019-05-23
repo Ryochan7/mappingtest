@@ -19,5 +19,10 @@ namespace mappingtester
         {
             mapper.SetAxisEvent(parent.Id, value);
         }
+
+        public void Release()
+        {
+
+        }
     }
 }

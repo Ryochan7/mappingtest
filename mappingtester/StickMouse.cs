@@ -2,7 +2,7 @@
 
 namespace mappingtester
 {
-    class StickMouse
+    public class StickMouse
     {
         private const int MOUSESPEEDFACTOR = 20;
         private const double MOUSESTICKOFFSET = 0.0495;
@@ -24,6 +24,9 @@ namespace mappingtester
         private int mouseXSpeed;
         private int mouseYSpeed;
 
+        private double xNorm = 0.0, yNorm = 0.0;
+        public bool activeEvent = false;
+
         public StickMouse(int min, int max, int mid = 0)
         {
             SetAxisRange(min, max);
@@ -40,9 +43,9 @@ namespace mappingtester
             mouseXSpeed = mouseYSpeed = 50;
         }
 
-        public void Event(Tester mapper, int axisXVal, int axisYVal)
+        public void Prepare(Tester mapper, int axisXVal, int axisYVal)
         {
-            double xNorm = 0.0, yNorm = 0.0;
+            xNorm = yNorm = 0.0;
 
             if (runInter)
             {
@@ -63,6 +66,11 @@ namespace mappingtester
                 yNorm = (axisYDir / (double)maxDirY) * (yNegative ? -1.0 : 1.0);
             }
 
+            activeEvent = xNorm != 0.0 || yNorm != 0.0;
+        }
+
+        public void Event(Tester mapper)
+        {
             if (xNorm != 0.0 || yNorm != 0.0)
             {
                 double xUnit = Math.Abs(xNorm);
@@ -126,6 +134,13 @@ namespace mappingtester
                 axisXOut = axisMid;
                 axisYOut = axisMid;
             }
+        }
+
+        public void Release(Tester mapper)
+        {
+            activeEvent = false;
+            xNorm = 0.0;
+            yNorm = 0.0;
         }
 
         private void SetAxisRange(int min, int max)

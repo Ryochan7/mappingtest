@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace mappingtester
 {
-    class StickTranslate
+    public class StickTranslate
     {
         private Tester.StickAlias id;
 
@@ -32,6 +32,9 @@ namespace mappingtester
         private int previousXVal;
         private int previousYVal;
 
+        private double xNorm = 0.0, yNorm = 0.0;
+        public bool activeEvent = false;
+
         public StickTranslate(Tester.StickAlias id, int min, int max, int mid=0)
         {
             this.id = id;
@@ -49,9 +52,9 @@ namespace mappingtester
             runInter = ShouldInterpolate();
         }
 
-        public void Event(Tester mapper, int axisXVal, int axisYVal)
+        public void Prepare(Tester mapper, int axisXVal, int axisYVal)
         {
-            double xNorm = 0.0, yNorm = 0.0;
+            xNorm = 0.0; yNorm = 0.0;
 
             if (runInter)
             {
@@ -72,7 +75,13 @@ namespace mappingtester
                 yNorm = (axisYDir / (double)maxDirY) * (yNegative ? -1.0 : 1.0);
             }
 
+            activeEvent = true;
+        }
+
+        public void Event(Tester mapper)
+        {
             mapper.SetStickEvent(id, xNorm, yNorm);
+            activeEvent = false;
         }
 
         private void RunModifiers(int axisXVal, int axisYVal,
@@ -125,6 +134,13 @@ namespace mappingtester
                 axisXOut = axisMid;
                 axisYOut = axisMid;
             }
+        }
+
+        public void Release(Tester mapper)
+        {
+            activeEvent = false;
+            xNorm = 0.0; yNorm = 0.0;
+            mapper.SetStickEvent(id, xNorm, yNorm);
         }
 
         private void SetAxisRange(int min, int max)
