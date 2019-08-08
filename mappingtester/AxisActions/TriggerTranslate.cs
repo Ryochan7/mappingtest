@@ -59,6 +59,7 @@ namespace mappingtester
             useAnalog = true;
             analogDeadZone = 0.2;
             analogMaxZone = 1.0;
+
             CalculateZonePoints();
             runInter = ShouldInterpolate();
         }

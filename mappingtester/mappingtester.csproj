@@ -80,10 +80,10 @@
   <ItemGroup>
     <Compile Include="ActionLayer.cs" />
     <Compile Include="ActionSet.cs" />
-    <Compile Include="AxisTranslate.cs" />
-    <Compile Include="ButtonGenTranslate.cs" />
-    <Compile Include="ButtonTranslate.cs" />
-    <Compile Include="DPadTranslate.cs" />
+    <Compile Include="AxisActions\AxisTranslate.cs" />
+    <Compile Include="ButtonActions\ButtonGenTranslate.cs" />
+    <Compile Include="ButtonActions\ButtonTranslate.cs" />
+    <Compile Include="DPadActions\DPadTranslate.cs" />
     <Compile Include="DS4Library\Crc32.cs" />
     <Compile Include="DS4Library\DS4Audio.cs" />
     <Compile Include="DS4Library\DS4Device.cs" />
@@ -108,11 +108,11 @@
     <Compile Include="Profile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StickMouse.cs" />
-    <Compile Include="StickTranslate.cs" />
+    <Compile Include="StickActions\StickMouse.cs" />
+    <Compile Include="StickActions\StickTranslate.cs" />
     <Compile Include="Tester.cs" />
-    <Compile Include="TriggerButton.cs" />
-    <Compile Include="TriggerTranslate.cs" />
+    <Compile Include="AxisActions\TriggerButton.cs" />
+    <Compile Include="AxisActions\TriggerTranslate.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VirtButtonBinding.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -139,6 +139,8 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GyroActions\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

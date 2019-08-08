@@ -14,7 +14,7 @@ namespace mappingtester
         {
             this.parent = parent;
         }
-        
+
         public void Event(Tester mapper, int value)
         {
             mapper.SetAxisEvent(parent.Id, value);
