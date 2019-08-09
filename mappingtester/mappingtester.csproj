@@ -119,6 +119,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StickActions\StickMouse.cs" />
     <Compile Include="StickActions\StickTranslate.cs" />
+    <Compile Include="StickModifiers\StickDeadZone.cs" />
+    <Compile Include="StickModifiers\StickModTypes.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="AxisActions\TriggerButton.cs" />
     <Compile Include="AxisActions\TriggerTranslate.cs" />
