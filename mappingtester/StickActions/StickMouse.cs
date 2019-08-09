@@ -6,6 +6,7 @@ namespace mappingtester
     {
         private const int MOUSESPEEDFACTOR = 20;
         private const double MOUSESTICKOFFSET = 0.0495;
+        private const int MOUSESPEED = 50;
 
         private int axisMax;
         private int axisMin;
@@ -17,12 +18,14 @@ namespace mappingtester
 
         private bool circleDead;
         private bool runInter = false;
+        private AxisModifiers.AxisOutCurves.Curve outCurve =
+            AxisModifiers.AxisOutCurves.Curve.EnhancedPrecision;
 
         private int previousXVal;
         private int previousYVal;
 
-        private int mouseXSpeed;
-        private int mouseYSpeed;
+        private int mouseXSpeed = MOUSESPEED;
+        private int mouseYSpeed = MOUSESPEED;
 
         private double xNorm = 0.0, yNorm = 0.0;
         public bool activeEvent = false;
@@ -40,7 +43,7 @@ namespace mappingtester
             antiDeadZone = 0.0;
             circleDead = true;
             runInter = ShouldInterpolate();
-            mouseXSpeed = mouseYSpeed = 50;
+            mouseXSpeed = mouseYSpeed = MOUSESPEED;
         }
 
         public void Prepare(Tester mapper, int axisXVal, int axisYVal)
@@ -77,8 +80,8 @@ namespace mappingtester
                 double yUnit = Math.Abs(yNorm);
                 double tempMouseOffsetX = xUnit * MOUSESTICKOFFSET;
                 double tempMouseOffsetY = yUnit * MOUSESTICKOFFSET;
-                double mouseX = ((mouseXSpeed * MOUSESPEEDFACTOR * mapper.timeElapsed) - tempMouseOffsetX) * xNorm + (tempMouseOffsetX * (xNorm > 0.0 ? 1.0 : -1.0));
-                double mouseY = ((mouseYSpeed * MOUSESPEEDFACTOR * mapper.timeElapsed) - tempMouseOffsetY) * yNorm + (tempMouseOffsetY * (yNorm > 0.0 ? 1.0 : -1.0));
+                double mouseX = ((mouseXSpeed * MOUSESPEEDFACTOR * mapper.timeElapsed) - tempMouseOffsetX) * xNorm + (tempMouseOffsetX * (xNorm > 0.0 ? 1.0 : -1.0)) * mouseXSpeed;
+                double mouseY = ((mouseYSpeed * MOUSESPEEDFACTOR * mapper.timeElapsed) - tempMouseOffsetY) * yNorm + (tempMouseOffsetY * (yNorm > 0.0 ? 1.0 : -1.0)) * mouseYSpeed;
                 //Console.WriteLine("X{0} {1} Y{2} {3} {4}", mouseX, xNorm, mouseY, yNorm, mapper.timeElapsed);
                 mapper.SetMouseCusorMovement(mouseX, mouseY);
             }
@@ -88,6 +91,7 @@ namespace mappingtester
             out int axisXOut, out int axisYOut, out double xNorm, out double yNorm)
         {
             bool inSafeZone = false;
+            axisXOut = axisYOut = axisMid;
             int axisXDir = axisXVal - axisMid, axisYDir = axisYVal - axisMid;
             bool xNegative = axisXDir < 0;
             bool yNegative = axisYDir < 0;
@@ -118,13 +122,11 @@ namespace mappingtester
 
                 int valueX = (axisXDir < 0 && axisXDir < maxZoneDirX) ? maxZoneDirX : (axisXDir > 0 && axisXDir > maxZoneDirX) ? maxZoneDirX : axisXDir;
                 xNorm = (1.0 - antiDeadX) * ((valueX - currentDeadX) / (double)(maxZoneDirX - currentDeadX)) + antiDeadX;
-                axisXOut = (int)(xNorm * maxDirX + axisMid);
                 if (xNegative) xNorm *= -1.0;
-                //Console.WriteLine("Val ({0}) Anti ({1}) Norm ({2})", valueX, antiDeadX, xNorm);
+                Console.WriteLine("Val ({0}) Anti ({1}) Norm ({2})", valueX, antiDeadX, xNorm);
 
                 int valueY = (axisYDir < 0 && axisYDir < maxZoneDirY) ? maxZoneDirY : (axisYDir > 0 && axisYDir > maxZoneDirY) ? maxZoneDirY : axisYDir;
                 yNorm = (1.0 - antiDeadY) * ((valueY - currentDeadY) / (double)(maxZoneDirY - currentDeadY)) + antiDeadY;
-                axisYOut = (int)(yNorm * maxDirY + axisMid);
                 if (yNegative) yNorm *= -1.0;
             }
             else
@@ -134,6 +136,18 @@ namespace mappingtester
                 axisXOut = axisMid;
                 axisYOut = axisMid;
             }
+
+            if (inSafeZone)
+            {
+                if (outCurve != AxisModifiers.AxisOutCurves.Curve.Linear)
+                {
+                    xNorm = AxisModifiers.AxisOutCurves.CalcOutValue(outCurve, xNorm);
+                    yNorm = AxisModifiers.AxisOutCurves.CalcOutValue(outCurve, yNorm);
+                }
+
+                axisXOut = (int)(xNorm * maxDirX + axisMid);
+                axisYOut = (int)(yNorm * maxDirY + axisMid);
+            }
         }
 
         public void Release(Tester mapper)
@@ -141,6 +155,12 @@ namespace mappingtester
             activeEvent = false;
             xNorm = 0.0;
             yNorm = 0.0;
+        }
+
+        public void SetSpeed(int speedX, int speedY)
+        {
+            mouseXSpeed = speedX;
+            mouseYSpeed = speedY;
         }
 
         private void SetAxisRange(int min, int max)

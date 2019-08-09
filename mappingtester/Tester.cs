@@ -11,7 +11,7 @@ namespace mappingtester
     public class IntermediateState
     {
         public bool[] buttons = new bool[(int)Tester.ButtonAlias.Right];
-        public static DS4Windows.DS4State bacon = null;
+        public static DS4Windows.DS4State bacon;
         public ref bool A => ref bacon.Cross;
     }
 

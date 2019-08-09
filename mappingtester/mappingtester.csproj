@@ -8,10 +8,11 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>mappingtester</RootNamespace>
     <AssemblyName>mappingtester</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,12 +62,19 @@
   <PropertyGroup>
     <StartupObject>mappingtester.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Nefarius.ViGEm.Client">
       <HintPath>libs\x64\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -81,6 +89,7 @@
     <Compile Include="ActionLayer.cs" />
     <Compile Include="ActionSet.cs" />
     <Compile Include="AxisActions\AxisTranslate.cs" />
+    <Compile Include="AxisModifiers\AxisOutCurves.cs" />
     <Compile Include="ButtonActions\ButtonGenTranslate.cs" />
     <Compile Include="ButtonActions\ButtonTranslate.cs" />
     <Compile Include="DPadActions\DPadTranslate.cs" />
@@ -123,7 +132,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
