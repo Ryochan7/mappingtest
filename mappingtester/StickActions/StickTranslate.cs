@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using mappingtester.StickModifiers;
+using mappingtester.AxisModifiers;
 
 namespace mappingtester
 {
@@ -14,23 +12,15 @@ namespace mappingtester
         private int axisMin;
         private int axisMid;
 
-        private double deadZone;
-        private int _deadZoneP;
-        private int _deadZoneM;
+        private StickDeadZone deadMod;
+        private AxisOutCurves.Curve outCurve =
+            AxisOutCurves.Curve.Linear;
 
-        private double maxZone;
-        private int _maxZoneP;
-        private int _maxZoneM;
-
-        private double antiDeadZone;
-        private int _antiDeadZoneP;
-        private int _antiDeadZoneM;
-
-        private bool circleDead;
+        //private bool circleDead;
         private bool runInter = false;
 
-        private int previousXVal;
-        private int previousYVal;
+        //private int previousXVal;
+        //private int previousYVal;
 
         private double xNorm = 0.0, yNorm = 0.0;
         public bool activeEvent = false;
@@ -44,12 +34,10 @@ namespace mappingtester
             else
                 axisMid = mid;
 
-            deadZone = 0.1;
-            maxZone = 1.0;
-            antiDeadZone = 0.25;
-            circleDead = true;
-            CalculateZonePoints();
-            runInter = ShouldInterpolate();
+            //circleDead = true;
+            //CalculateZonePoints();
+            deadMod = new StickDeadZone(0.05, 1.0, 0.0);
+            runInter = deadMod.ShouldInterpolate();
         }
 
         public void Prepare(Tester mapper, int axisXVal, int axisYVal)
@@ -87,52 +75,33 @@ namespace mappingtester
         private void RunModifiers(int axisXVal, int axisYVal,
             out int axisXOut, out int axisYOut, out double xNorm, out double yNorm)
         {
-            bool inSafeZone = false;
+            axisXOut = axisYOut = axisMid;
             int axisXDir = axisXVal - axisMid, axisYDir = axisYVal - axisMid;
+
             bool xNegative = axisXDir < 0;
             bool yNegative = axisYDir < 0;
-
-            double angle = Math.Atan2(-(axisYDir), axisXDir);
-            double angCos = Math.Abs(Math.Cos(angle)),
-                angSin = Math.Abs(Math.Sin(angle));
-
             int maxDirX = (!xNegative ? axisMax : axisMin) - axisMid;
             int maxDirY = (!yNegative ? axisMax : axisMin) - axisMid;
             //int currentDeadX = (int)((!xNegative ? _deadZoneP : _deadZoneM) * angCos);
             //int currentDeadY = (int)((!yNegative ? _deadZoneP : _deadZoneM) * angSin);
-            int currentDeadX = (int)(deadZone * maxDirX * angCos);
-            int currentDeadY = (int)(deadZone * maxDirY * angSin);
 
-            double stickDeadzoneSquared = (currentDeadX * currentDeadX) + (currentDeadY * currentDeadY);
-            double stickSquared = Math.Pow(axisXDir, 2) + Math.Pow(axisYDir, 2);
-            inSafeZone = stickSquared > stickDeadzoneSquared;
-            if (inSafeZone)
+            deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX,
+                maxDirY, out xNorm, out yNorm);
+            if (deadMod.inSafeZone)
             {
-                double antiDeadX = antiDeadZone * angCos;
-                double antiDeadY = antiDeadZone * angSin;
-                
-                //int maxZoneDirX = !xNegative ? _maxZoneP : _maxZoneM;
-                //int maxZoneDirY = !yNegative ? _maxZoneP : _maxZoneM;
-                int maxZoneDirX = (int)(maxZone * maxDirX);
-                int maxZoneDirY = (int)(maxZone * maxDirY);
+                if (outCurve != AxisOutCurves.Curve.Linear)
+                {
+                    xNorm = AxisOutCurves.CalcOutValue(outCurve, xNorm);
+                    yNorm = AxisOutCurves.CalcOutValue(outCurve, yNorm);
+                }
 
-                int valueX = (axisXDir < 0 && axisXDir < maxZoneDirX) ? maxZoneDirX : (axisXDir > 0 && axisXDir > maxZoneDirX) ? maxZoneDirX : axisXDir;
-                xNorm = (1.0 - antiDeadX) * ((valueX - currentDeadX) / (double)(maxZoneDirX - currentDeadX)) + antiDeadX;
                 axisXOut = (int)(xNorm * maxDirX + axisMid);
-                if (xNegative) xNorm *= -1.0;
-                //Console.WriteLine("Val ({0}) Anti ({1}) Norm ({2})", valueX, antiDeadX, xNorm);
-
-                int valueY = (axisYDir < 0 && axisYDir < maxZoneDirY) ? maxZoneDirY : (axisYDir > 0 && axisYDir > maxZoneDirY) ? maxZoneDirY : axisYDir;
-                yNorm = (1.0 - antiDeadY) * ((valueY - currentDeadY) / (double)(maxZoneDirY - currentDeadY)) + antiDeadY;
                 axisYOut = (int)(yNorm * maxDirY + axisMid);
-                if (yNegative) yNorm *= -1.0;
             }
             else
             {
                 xNorm = 0.0;
                 yNorm = 0.0;
-                axisXOut = axisMid;
-                axisYOut = axisMid;
             }
         }
 
@@ -147,22 +116,6 @@ namespace mappingtester
         {
             axisMin = min;
             axisMax = max;
-        }
-
-        private void CalculateZonePoints()
-        {
-            _deadZoneP = (int)(deadZone * (axisMax - axisMid));
-            _deadZoneM = (int)(deadZone * (axisMin - axisMid));
-            _maxZoneP = (int)(maxZone * (axisMax - axisMid));
-            _maxZoneM = (int)(maxZone * (axisMin - axisMid));
-            _antiDeadZoneP = (int)(antiDeadZone * (axisMax - axisMid));
-            _antiDeadZoneM = (int)(antiDeadZone * (axisMin - axisMid));
-        }
-
-        private bool ShouldInterpolate()
-        {
-            bool result = deadZone != 0.0 || maxZone != 1.0 || antiDeadZone != 0.0;
-            return result;
         }
     }
 }
