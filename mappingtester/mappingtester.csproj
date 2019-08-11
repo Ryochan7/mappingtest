@@ -88,10 +88,14 @@
   <ItemGroup>
     <Compile Include="ActionLayer.cs" />
     <Compile Include="ActionSet.cs" />
+    <Compile Include="ActionUtil\ActionButton.cs" />
+    <Compile Include="ActionUtil\CycleAction.cs" />
     <Compile Include="AxisActions\AxisTranslate.cs" />
     <Compile Include="AxisModifiers\AxisOutCurves.cs" />
     <Compile Include="ButtonActions\ButtonGenTranslate.cs" />
     <Compile Include="ButtonActions\ButtonTranslate.cs" />
+    <Compile Include="DPadActions\DpadActionPad.cs" />
+    <Compile Include="DPadActions\DpadDirections.cs" />
     <Compile Include="DPadActions\DPadTranslate.cs" />
     <Compile Include="DS4Library\Crc32.cs" />
     <Compile Include="DS4Library\DS4Audio.cs" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
+using mappingtester.DPadActions;
 
 namespace mappingtester
 {

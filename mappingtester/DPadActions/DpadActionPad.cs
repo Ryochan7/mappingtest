@@ -1,10 +1,13 @@
-﻿namespace mappingtester.DPadActions
+﻿using mappingtester.ActionUtil;
+
+namespace mappingtester.DPadActions
 {
-    public class DPadTranslate
+    public class DpadActionPad
     {
         public enum DPadMode : uint
         {
             Standard,
+            EightWay,
             FourWayCardinal,
             FourWayDiagonal,
         }
@@ -14,9 +17,33 @@
         private DpadDirections activeDir = DpadDirections.Centered;
         public bool IsActive => current != DpadDirections.Centered;
         private DPadMode currentMode = DPadMode.Standard;
+        public DPadMode DpadMode
+        {
+            get => currentMode;
+            set => currentMode = value;
+        }
+
+        private ActionButton[] actBtns = new ActionButton[13]
+        {
+            null,
+            new ActionButton(),
+            new ActionButton(),
+            new ActionButton(),
+            new ActionButton(),
+            null,
+            new ActionButton(),
+            null,
+            new ActionButton(),
+            new ActionButton(),
+            null,
+            null,
+            new ActionButton(),
+        };
+        private ActionButton activeBtn;
+
         public bool activeEvent;
 
-        public DPadTranslate()
+        public DpadActionPad()
         {
         }
 
@@ -34,21 +61,23 @@
                     activeDir = current;
 
                 activeEvent = true;
+                activeBtn = actBtns[(int)activeDir];
             }
         }
 
         public void Event(Tester mapper)
         {
-            mapper.SetDPadEvent(current);
+            activeBtn.Event(mapper, activeEvent);
         }
 
         public void Release(Tester mapper)
         {
             if (activeDir != DpadDirections.Centered)
             {
-                mapper.SetDPadEvent(DpadDirections.Centered);
                 current = DpadDirections.Centered;
                 activeDir = current;
+                activeEvent = false;
+                activeBtn.Event(mapper, activeEvent);
             }
         }
 
@@ -96,6 +125,11 @@
                     activeDir = DpadDirections.UpLeft;
                 }
             }
+        }
+
+        public ActionButton GetActionButton(DpadDirections dir)
+        {
+            return actBtns[(int)dir];
         }
     }
 }

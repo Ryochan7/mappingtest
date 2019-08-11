@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using mappingtester.DPadActions;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 //using Nefarius.ViGEm.Client.Targets.DualShock4;
@@ -82,6 +83,7 @@ namespace mappingtester
         public Xbox360Report reportx = new Xbox360Report();
         private ushort tempbuttons;
         private Dictionary<ushort, uint> keysCount = new Dictionary<ushort, uint>();
+        private bool keyActive = false;
 
         private StickTranslate testLeftStick = new StickTranslate(StickAlias.LeftStick, 0, 255);
         //private StickTranslate testRightStick = new StickTranslate(StickAlias.RightStick, 0, 255);
@@ -203,6 +205,17 @@ namespace mappingtester
             DS4Windows.DS4State previous = dev.getPreviousStateRef();
             Mapping(current, previous);
             xbux.SendReport(reportx);
+            if (keyActive)
+            {
+                SendKeyboardEvents();
+                keyActive = false;
+            }
+
+            if (mouseX != 0.0 || mouseY != 0.0)
+                GenerateMouseMoveEvent();
+
+            if (mouseWheelX != 0.0 || mouseWheelY != 0.0)
+                GenerateWheelEvent();
         }
 
         public void Mapping(DS4Windows.DS4State current,
@@ -312,17 +325,17 @@ namespace mappingtester
 
             unchecked
             {
-                DPadTranslate.DpadDirections currentDpad =
-                DPadTranslate.DpadDirections.Centered;
+                DpadDirections currentDpad =
+                DpadDirections.Centered;
 
                 if (current.DpadUp)
-                    currentDpad |= DPadTranslate.DpadDirections.Up;
+                    currentDpad |= DpadDirections.Up;
                 if (current.DpadRight)
-                    currentDpad |= DPadTranslate.DpadDirections.Right;
+                    currentDpad |= DpadDirections.Right;
                 if (current.DpadDown)
-                    currentDpad |= DPadTranslate.DpadDirections.Down;
+                    currentDpad |= DpadDirections.Down;
                 if (current.DpadLeft)
-                    currentDpad |= DPadTranslate.DpadDirections.Left;
+                    currentDpad |= DpadDirections.Left;
 
                 ass.testDpad.Prepare(this, currentDpad);
                 if (ass.testDpad.activeEvent)
@@ -408,7 +421,24 @@ namespace mappingtester
             */
 
             reportx.Buttons = tempbuttons;
-            GenerateMouseEvent();
+        }
+
+        public void SendKeyboardEvents()
+        {
+            foreach (KeyValuePair<ushort, uint> pair in keysCount)
+            {
+
+                if (pair.Value > 0)
+                {
+                    InputMethods.performKeyPress(pair.Key);
+                }
+                else
+                {
+                    InputMethods.performKeyRelease(pair.Key);
+                }
+            }
+
+            keysCount.Clear();
         }
 
         private void PopIS(DS4Windows.DS4State current)
@@ -469,28 +499,28 @@ namespace mappingtester
             }
         }
 
-        public void SetDPadEvent(DPadTranslate.DpadDirections value)
+        public void SetDPadEvent(DpadDirections value)
         {
             unchecked
             {
                 const ushort dpadReset = (ushort)~15;
                 tempbuttons &= dpadReset;
-                if ((value & DPadTranslate.DpadDirections.Up) == DPadTranslate.DpadDirections.Up)
+                if ((value & DpadDirections.Up) == DpadDirections.Up)
                 {
                     tempbuttons |= (ushort)Xbox360Buttons.Up;
                 }
 
-                if ((value & DPadTranslate.DpadDirections.Right) == DPadTranslate.DpadDirections.Right)
+                if ((value & DpadDirections.Right) == DpadDirections.Right)
                 {
                     tempbuttons |= (ushort)Xbox360Buttons.Right;
                 }
 
-                if ((value & DPadTranslate.DpadDirections.Down) == DPadTranslate.DpadDirections.Down)
+                if ((value & DpadDirections.Down) == DpadDirections.Down)
                 {
                     tempbuttons |= (ushort)Xbox360Buttons.Down;
                 }
 
-                if ((value & DPadTranslate.DpadDirections.Right) == DPadTranslate.DpadDirections.Right)
+                if ((value & DpadDirections.Right) == DpadDirections.Right)
                 {
                     tempbuttons |= (ushort)Xbox360Buttons.Right;
                 }
@@ -499,16 +529,17 @@ namespace mappingtester
 
         public void SetKeyEvent(ushort value, bool pressed)
         {
+            keyActive = true;
             keysCount.TryGetValue(value, out uint count);
             if (count == 0 && pressed)
             {
                 keysCount[value] = count + 1;
-                InputMethods.performKeyPress(value);
+                //InputMethods.performKeyPress(value);
             }
             else if (count == 1 && !pressed)
             {
-                InputMethods.performKeyRelease(value);
-                keysCount.Remove(value);
+                //InputMethods.performKeyRelease(value);
+                keysCount[value] = 0;
             }
             else if (!pressed)
             {
@@ -518,19 +549,19 @@ namespace mappingtester
 
         public void SetMouseButton(uint value, bool pressed)
         {
-            InputMethods.MouseEvent(value);
+            InputMethods.MouseEvent(value, pressed ? 0 : 1);
         }
 
         public void SetMouseCusorMovement(double x, double y)
         {
-            mouseX = x;
-            mouseY = y;
+            mouseX += x >= 0 ? Math.Max(x, mouseX) : Math.Min(x, mouseX);
+            mouseY += y >= 0 ? Math.Max(y, mouseY) : Math.Min(y, mouseY);
         }
 
         public void SetMouseWheel(double vertical, double horizontal)
         {
-            mouseWheelY = vertical;
-            mouseWheelX = horizontal;
+            mouseWheelY += vertical;
+            mouseWheelX += horizontal;
         }
 
         public void SetAbsMousePosition(double xNorm, double yNorm)
@@ -543,7 +574,7 @@ namespace mappingtester
             return dividend - (divisor * (int)(dividend / divisor));
         }
 
-        public void GenerateMouseEvent()
+        public void GenerateMouseMoveEvent()
         {
             if (mouseX != 0.0 || mouseY != 0.0)
             {
@@ -584,7 +615,31 @@ namespace mappingtester
 
         private void GenerateWheelEvent()
         {
-            mouseWheelXRemainder = mouseWheelYRemainder = 0.0;
+            if (mouseWheelX != 0.0 || mouseWheelY != 0.0)
+            {
+                if ((mouseWheelX > 0.0 && mouseWheelXRemainder > 0.0) || (mouseWheelX < 0.0 && mouseWheelXRemainder < 0.0))
+                {
+                    mouseWheelX += mouseWheelXRemainder;
+                }
+
+                if ((mouseWheelY > 0.0 && mouseWheelYRemainder > 0.0) || (mouseWheelY < 0.0 && mouseWheelYRemainder < 0.0))
+                {
+                    mouseWheelY += mouseWheelYRemainder;
+                }
+
+                mouseWheelXRemainder = mouseWheelX % (mouseWheelX > 0.0 ? 120.0 : -120.0);
+                mouseWheelYRemainder = mouseWheelY % (mouseWheelY > 0.0 ? 120.0 : -120.0);
+                if (mouseWheelY >= 120.0 || mouseWheelY <= -120.0)
+                    InputMethods.MouseEvent(InputMethods.MOUSEEVENTF_WHEEL, (int)mouseWheelY);
+
+                if (mouseWheelX >= 120.0 || mouseWheelX <= -120.0)
+                    InputMethods.MouseEvent(InputMethods.MOUSEEVENTF_HWHEEL, (int)mouseWheelX);
+            }
+            else
+            {
+                mouseWheelXRemainder = mouseWheelYRemainder = 0.0;
+            }
+
             mouseWheelX = mouseWheelY = 0.0;
         }
 
