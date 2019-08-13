@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using mappingtester.AxisModifiers;
 
-namespace mappingtester
+namespace mappingtester.AxisActions
 {
     class AxisTranslate
     {

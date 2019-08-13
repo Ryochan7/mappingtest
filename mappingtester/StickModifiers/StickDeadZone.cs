@@ -7,7 +7,7 @@ namespace mappingtester.StickModifiers
         private double deadZone;
         private double maxZone = 1.0;
         private double antiDeadZone;
-        //private bool circleDead = true;
+        private bool circleDead = true;
         public bool inSafeZone;
 
         public StickDeadZone(double deadZone, double maxZone, double antiDeadZone)

@@ -89,8 +89,13 @@
     <Compile Include="ActionLayer.cs" />
     <Compile Include="ActionSet.cs" />
     <Compile Include="ActionUtil\ActionButton.cs" />
+    <Compile Include="ActionUtil\ActionFunc.cs" />
     <Compile Include="ActionUtil\CycleAction.cs" />
+    <Compile Include="ActionUtil\HoldPressFunc.cs" />
+    <Compile Include="ActionUtil\NormalPressFunc.cs" />
     <Compile Include="AxisActions\AxisTranslate.cs" />
+    <Compile Include="AxisModifiers\AxisDeadZone.cs" />
+    <Compile Include="AxisModifiers\AxisModTypes.cs" />
     <Compile Include="AxisModifiers\AxisOutCurves.cs" />
     <Compile Include="ButtonActions\ButtonGenTranslate.cs" />
     <Compile Include="ButtonActions\ButtonTranslate.cs" />
@@ -125,6 +130,7 @@
     <Compile Include="StickActions\StickTranslate.cs" />
     <Compile Include="StickModifiers\StickDeadZone.cs" />
     <Compile Include="StickModifiers\StickModTypes.cs" />
+    <Compile Include="StickModifiers\StickSquare.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="AxisActions\TriggerButton.cs" />
     <Compile Include="AxisActions\TriggerTranslate.cs" />

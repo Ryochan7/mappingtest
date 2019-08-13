@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using mappingtester.AxisModifiers;
 
-namespace mappingtester
+namespace mappingtester.AxisActions
 {
     public class TriggerTranslate
     {
@@ -20,11 +16,10 @@ namespace mappingtester
 
         private int min;
         private int max;
-        private int previousValue;
 
         private TriggerButton softPullBtn;
         private TriggerButton fullPullBtn;
-        private ActivateStyle activateMode;
+        //private ActivateStyle activateMode;
         private TriggerButton activeButton;
         private TriggerButton previousButton;
         private bool releaseButton;
@@ -34,12 +29,11 @@ namespace mappingtester
         public int SoftFullPoint { get => softPullPoint; set => softPullPoint = value; }
 
         private bool useAnalog;
-        private double analogDeadZone;
-        private int _analogDeadZone;
-        private double analogMaxZone;
-        private int _analogMaxZone;
+        private AxisModTypes.Mods usedMods;
+        private AxisDeadZone deadZone;
 
         private int currentValue;
+        private double axisNorm;
         public bool activeEvent = false;
 
         private bool runInter = false;
@@ -54,14 +48,12 @@ namespace mappingtester
             softPullBtn = new TriggerButton(this);
             fullPullBtn = new TriggerButton(this);
             activeButton = null;
-            activateMode = ActivateStyle.Normal;
-
+            //activateMode = ActivateStyle.Normal;
             useAnalog = true;
-            analogDeadZone = 0.2;
-            analogMaxZone = 1.0;
 
-            CalculateZonePoints();
-            runInter = ShouldInterpolate();
+            deadZone = new AxisDeadZone(0.2, 1.0, 0.0);
+            runInter = deadZone.ShouldInterpolate();
+            usedMods = AxisModTypes.Mods.DeadZone;
         }
 
         public void Prepare(Tester mapper, int value)
@@ -70,8 +62,7 @@ namespace mappingtester
             {
                 if (runInter)
                 {
-                    Modifiers(value, out int temp, out double axisNorm);
-                    value = currentValue = temp;
+                    RunModifiers(value, out axisNorm);
                 }
                 else
                 {
@@ -112,7 +103,6 @@ namespace mappingtester
         {
             if (useAnalog)
             {
-                double axisNorm = currentValue / (double)max;
                 mapper.SetAxisEvent(id, axisNorm);
             }
             else
@@ -134,29 +124,32 @@ namespace mappingtester
             this.max = max;
         }
 
-        private void CalculateZonePoints()
+        public void RunModifiers(int value, out double axisNorm)
         {
-            _analogDeadZone = (int)(analogDeadZone * max);
-            _analogMaxZone = (int)(analogMaxZone * max);
+            double tempNorm;
+            if ((usedMods & AxisModTypes.Mods.DeadZone) ==
+                AxisModTypes.Mods.DeadZone)
+                deadZone.CalcOutValues(value, max, out tempNorm);
+            else
+                tempNorm = value / (double)max;
+
+            axisNorm = tempNorm;
         }
 
-        public void Modifiers(int value, out int axisValue, out double axisNorm)
+        public void Release(Tester mapper)
         {
-            axisValue = value;
-            axisNorm = axisValue / (double)_analogMaxZone;
-        }
+            if (useAnalog)
+            {
+                mapper.SetAxisEvent(id, 0.0);
+            }
+            else
+            {
+                previousButton = null;
+                activeButton = null;
+            }
 
-        public void Release()
-        {
-            previousButton = null;
-            activeButton = null;
+            axisNorm = 0.0;
             activeEvent = false;
-        }
-
-        private bool ShouldInterpolate()
-        {
-            bool result = analogDeadZone != 0.0 || analogMaxZone != 1.0;
-            return result;
         }
     }
 }

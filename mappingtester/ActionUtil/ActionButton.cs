@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static mappingtester.ActionUtil.ActionFunc;
 using static mappingtester.Tester;
 
 namespace mappingtester.ActionUtil
 {
     public class ActionButton
     {
-        public enum OutMode : uint
+        /*public enum OutMode : uint
         {
             None,
             KB,
@@ -28,42 +29,23 @@ namespace mappingtester.ActionUtil
             public AxisAlias axisId;
             public uint mouseSpeed;
         }
+        */
 
         private bool active;
-        private OutMode outMode;
-        //private uint outId;
-        private OutputIds outputId;
         public bool IsActive => active;
+
+        private List<ActionFunc> pressFuncs = new List<ActionFunc>();
+        private int currentPressFuncIdx;
+
+        private List<ActionFunc> releaseFuncs = new List<ActionFunc>();
+        private int currentReleaseFuncIdx;
+
+        private List<ActionFunc> activeFuncs = new List<ActionFunc>();
 
         public ActionButton()
         {
-
-        }
-
-        public ActionButton(OutMode mode, uint code)
-        {
-            switch(mode)
-            {
-                case OutMode.ContBtn:
-                    outputId.buttonValue = code;
-                    break;
-                case OutMode.ContAxis:
-                    outputId.axisId = (AxisAlias)code;
-                    break;
-                case OutMode.None:
-                    break;
-                case OutMode.KB:
-                    outputId.keyCode = (ushort)code;
-                    break;
-                case OutMode.MouseButton:
-                    outputId.mouseCode = code;
-                    break;
-                case OutMode.Mouse:
-                    outputId.mouseSpeed = code;
-                    break;
-                default:
-                    break;
-            }
+            NormalPressFunc func = new NormalPressFunc(OutMode.KB, 40);
+            pressFuncs.Add(func);
         }
 
         public void Event(Tester mapper, bool active)
@@ -72,27 +54,23 @@ namespace mappingtester.ActionUtil
             {
                 this.active = active;
 
-                switch(outMode)
+                if (active)
                 {
-                    case OutMode.None:
-                        break;
-                    case OutMode.ContBtn:
-                        mapper.SetButtonEvent(outputId.buttonId, active, outputId.buttonValue);
-                        break;
-                    case OutMode.ContAxis:
-                        mapper.SetAxisEvent(outputId.axisId, active ? 1.0 : 0.0);
-                        break;
-                    case OutMode.KB:
-                        mapper.SetKeyEvent(outputId.keyCode, active);
-                        break;
-                    case OutMode.MouseButton:
-                        mapper.SetMouseButton(outputId.mouseCode, active);
-                        break;
-                    //case OutMode.Mouse:
-                    //    mapper.SetMouseCusorMovement(0.0, 0.0);
-                    //    break;
-                    default:
-                        break;
+                    foreach(ActionFunc func in pressFuncs)
+                    {
+                        func.Event(mapper, active);
+                        activeFuncs.Add(func);
+                    }
+                }
+                else
+                {
+                    for (int i = activeFuncs.Count; i >= 0; i--)
+                    {
+                        ActionFunc current = activeFuncs[i];
+                        current.Event(mapper, false);
+                    }
+
+                    activeFuncs.Clear();
                 }
             }
         }
@@ -102,28 +80,29 @@ namespace mappingtester.ActionUtil
             if (active)
             {
                 active = false;
-                switch (outMode)
+                for (int i = activeFuncs.Count; i >= 0; i--)
                 {
-                    case OutMode.None:
-                        break;
-                    case OutMode.ContBtn:
-                        mapper.SetButtonEvent(outputId.buttonId, active, outputId.buttonValue);
-                        break;
-                    case OutMode.ContAxis:
-                        mapper.SetAxisEvent(outputId.axisId, active ? 1.0 : 0.0);
-                        break;
-                    case OutMode.KB:
-                        mapper.SetKeyEvent(outputId.keyCode, active);
-                        break;
-                    case OutMode.MouseButton:
-                        mapper.SetMouseButton(outputId.mouseCode, active);
-                        break;
-                    case OutMode.Mouse:
-                        break;
-                    default:
-                        break;
+                    ActionFunc current = activeFuncs[i];
+                    current.Event(mapper, false);
                 }
+
+                activeFuncs.Clear();
             }
+        }
+
+        public void AddActionFunc(ActionFunc func)
+        {
+            pressFuncs.Add(func);
+        }
+
+        public void RemoveActionFunc(int index)
+        {
+            pressFuncs.RemoveAt(index);
+        }
+
+        public void InsertActionFunc(int index, ActionFunc func)
+        {
+            pressFuncs.Insert(index, func);
         }
     }
 }

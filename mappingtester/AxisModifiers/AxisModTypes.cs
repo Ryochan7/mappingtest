@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace mappingtester.StickModifiers
+namespace mappingtester.AxisModifiers
 {
-    public class StickModTypes
+    public class AxisModTypes
     {
         [Flags]
         public enum Mods : uint
@@ -11,9 +11,6 @@ namespace mappingtester.StickModifiers
             Sensitivity = 1,
             DeadZone = 1 << 1,
             OutCurve = 1 << 2,
-            Rotation = 1 << 3,
-            SquareStick = 1 << 4,
-            Smoothing = 1 << 5,
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using mappingtester.DPadActions;
+using mappingtester.AxisActions;
 
 namespace mappingtester
 {
@@ -33,6 +34,8 @@ namespace mappingtester
         public ButtonTranslate testRThumbBtn;
         public DPadTranslate testDpad;
 
+        public string DisplayName { get => displayName; set => displayName = value; }
+
         public ActionSet()
         {
             actionLayers = new List<ActionLayer>(DEFAULT_LAYERS);
@@ -45,6 +48,7 @@ namespace mappingtester
             testBBtn = new ButtonTranslate(Tester.ButtonAlias.B, (uint)Xbox360Buttons.B);
             testLeftStick = new StickTranslate(Tester.StickAlias.LeftStick, 0, 255);
             testRightStick = new StickMouse(0, 255);
+            testRightStick.SetSpeed(100, 100);
             testLT = new TriggerTranslate(Tester.AxisAlias.LeftTrigger, 0, 255);
             testRT = new TriggerTranslate(Tester.AxisAlias.RightTrigger, 0, 255);
             testLBBtn = new ButtonTranslate(Tester.ButtonAlias.LeftShoulder, (uint)Xbox360Buttons.LeftShoulder);

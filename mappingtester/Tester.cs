@@ -85,12 +85,12 @@ namespace mappingtester
         private Dictionary<ushort, uint> keysCount = new Dictionary<ushort, uint>();
         private bool keyActive = false;
 
-        private StickTranslate testLeftStick = new StickTranslate(StickAlias.LeftStick, 0, 255);
+        //private StickTranslate testLeftStick = new StickTranslate(StickAlias.LeftStick, 0, 255);
         //private StickTranslate testRightStick = new StickTranslate(StickAlias.RightStick, 0, 255);
-        private StickMouse testRightStick = new StickMouse(0, 255);
+        //private StickMouse testRightStick = new StickMouse(0, 255);
 
-        private TriggerTranslate testLT = new TriggerTranslate(AxisAlias.LeftTrigger, 0, 255);
-        private TriggerTranslate testRT = new TriggerTranslate(AxisAlias.RightTrigger, 0, 255);
+        //private TriggerTranslate testLT = new TriggerTranslate(AxisAlias.LeftTrigger, 0, 255);
+        //private TriggerTranslate testRT = new TriggerTranslate(AxisAlias.RightTrigger, 0, 255);
 
         //private ButtonTranslate testABtn = new ButtonTranslate(ButtonAlias.A, (uint)Xbox360Buttons.A);
         //private VirtButtonBinding bitchLasagna = 
@@ -114,7 +114,7 @@ namespace mappingtester
         });
         */
 
-        private ButtonGenTranslate testABtn = new ButtonGenTranslate(new VirtButtonBinding(VirtButtonBinding.BindingType.JoyAxis)
+        /*private ButtonGenTranslate testABtn = new ButtonGenTranslate(new VirtButtonBinding(VirtButtonBinding.BindingType.JoyAxis)
         {
             JoyAId = AxisAlias.LeftX,
             JoyAxisValue = 1.0,
@@ -134,6 +134,7 @@ namespace mappingtester
         private ButtonTranslate testRThumbBtn = new ButtonTranslate(ButtonAlias.RightThumb, (uint)Xbox360Buttons.RightThumb);
 
         private DPadTranslate testDpad = new DPadTranslate();
+        */
 
         private ActionSet testSet = new ActionSet();
 

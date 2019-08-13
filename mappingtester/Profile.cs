@@ -39,6 +39,10 @@ namespace mappingtester
             actionSetNum = index;
         }
 
+
+        /// <summary>
+        /// Load JSON file and make Action instances. Currently does nothing
+        /// </summary>
         public void Load()
         {
             /*if (File.Exists(fileLoc))
