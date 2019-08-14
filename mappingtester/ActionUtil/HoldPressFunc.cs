@@ -10,6 +10,14 @@ namespace mappingtester.ActionUtil
         private Stopwatch elapsed = new Stopwatch();
         private bool waited;
 
+        public HoldPressFunc()
+        {
+        }
+
+        public HoldPressFunc(OutMode mode, uint code) : base(mode, code)
+        {
+        }
+
         public override void Event(Tester mapper, bool active)
         {
             if (this.active != active)
@@ -33,7 +41,7 @@ namespace mappingtester.ActionUtil
                 {
                     waited = true;
                     // Execute system event
-                    SendEvent(mapper);
+                    SendOutputEvent(mapper);
                 }
             }
         }
@@ -44,7 +52,7 @@ namespace mappingtester.ActionUtil
             {
                 active = false;
                 waited = false;
-                ReleaseEvent(mapper);
+                ReleaseOuputEvent(mapper);
             }
         }
     }

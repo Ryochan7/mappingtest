@@ -10,27 +10,6 @@ namespace mappingtester.ActionUtil
 {
     public class ActionButton
     {
-        /*public enum OutMode : uint
-        {
-            None,
-            KB,
-            Mouse,
-            MouseButton,
-            ContBtn,
-            ContAxis,
-        }
-
-        public struct OutputIds
-        {
-            public ushort keyCode;
-            public uint mouseCode;
-            public ButtonAlias buttonId;
-            public uint buttonValue;
-            public AxisAlias axisId;
-            public uint mouseSpeed;
-        }
-        */
-
         private bool active;
         public bool IsActive => active;
 

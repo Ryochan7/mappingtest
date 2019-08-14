@@ -15,14 +15,14 @@
             if (this.active != active)
             {
                 this.active = active;
-                SendEvent(mapper);
+                SendOutputEvent(mapper);
             }
         }
 
         public override void Release(Tester mapper)
         {
             active = false;
-            ReleaseEvent(mapper);
+            ReleaseOuputEvent(mapper);
         }
     }
 }

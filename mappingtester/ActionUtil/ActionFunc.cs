@@ -62,7 +62,7 @@ namespace mappingtester.ActionUtil
         public abstract void Event(Tester mapper, bool active);
         public abstract void Release(Tester mapper);
 
-        protected void SendEvent(Tester mapper)
+        protected void SendOutputEvent(Tester mapper)
         {
             switch (outMode)
             {
@@ -88,7 +88,7 @@ namespace mappingtester.ActionUtil
             }
         }
 
-        protected void ReleaseEvent(Tester mapper)
+        protected void ReleaseOuputEvent(Tester mapper)
         {
             switch (outMode)
             {

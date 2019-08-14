@@ -91,6 +91,7 @@
     <Compile Include="ActionUtil\ActionButton.cs" />
     <Compile Include="ActionUtil\ActionFunc.cs" />
     <Compile Include="ActionUtil\CycleAction.cs" />
+    <Compile Include="ActionUtil\FuncConv.cs" />
     <Compile Include="ActionUtil\HoldPressFunc.cs" />
     <Compile Include="ActionUtil\NormalPressFunc.cs" />
     <Compile Include="AxisActions\AxisTranslate.cs" />
