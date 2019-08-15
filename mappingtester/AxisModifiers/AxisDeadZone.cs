@@ -14,10 +14,11 @@
             this.antiDeadZone = antiDeadZone;
         }
 
-        public void CalcOutValues(int value, int maxDirValue, out double axisNorm)
+        public void CalcOutValues(int valueDir, int maxDirValue, out double axisNorm)
         {
-            int maxZoneDirVal = (int)(maxZone * maxDirValue);
-            axisNorm = value / (double)maxZoneDirVal;
+            double maxZoneDirVal = maxZone * maxDirValue;
+            bool negative = valueDir < 0;
+            axisNorm = valueDir / (negative ? -maxZoneDirVal : maxZoneDirVal);
         }
 
         public bool ShouldInterpolate()

@@ -93,8 +93,8 @@ namespace mappingtester
             }
             else
             {
-                xNorm = axisXDir / maxDirX;
-                yNorm = axisYDir / maxDirY;
+                xNorm = axisXDir / (xNegative ? -maxDirX : maxDirX);
+                yNorm = axisYDir / (yNegative ? -maxDirY : maxDirY);
                 inSafeZone = xNorm != 0.0 || yNorm != 0.0;
             }
 
@@ -113,8 +113,8 @@ namespace mappingtester
                 yNorm = 0.0;
             }
 
-            axisXOut = (int)(xNorm * maxDirX + axisMid);
-            axisYOut = (int)(yNorm * maxDirY + axisMid);
+            axisXOut = (int)(Math.Abs(xNorm) * maxDirX + axisMid);
+            axisYOut = (int)(Math.Abs(yNorm) * maxDirY + axisMid);
         }
 
         public void Release(Tester mapper)

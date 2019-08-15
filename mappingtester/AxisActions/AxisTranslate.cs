@@ -1,4 +1,5 @@
 ﻿using mappingtester.AxisModifiers;
+using System;
 
 namespace mappingtester.AxisActions
 {
@@ -10,25 +11,48 @@ namespace mappingtester.AxisActions
         private int max;
         private int mid;
 
-        private double deadZone;
-        private int _deadZoneP;
-        private int _deadZoneM;
+        private AxisModTypes.Mods usedMods;
+        private AxisDeadZone deadMod;
 
-        private double maxZone;
-        private int _maxZoneP;
-        private int _maxZoneM;
+        private double axisNorm;
 
-        private double antiDeadZone;
-        private int _antiDeadZoneP;
-        private int _antiDeadZoneM;
-
+        public bool activeEvent = false;
         private bool runInter = false;
 
-        public AxisTranslate(Tester.AxisAlias id, int min, int max, int mid=0)
+        public AxisTranslate(Tester.AxisAlias id, int min, int max, int mid = 0)
         {
             this.id = id;
-            SetAxisRange(min, max);
-            maxZone = 1.0;
+            SetAxisRange(min, max, mid);
+
+            deadMod = new AxisDeadZone(0.2, 1.0, 0.2);
+            runInter = deadMod.ShouldInterpolate();
+            usedMods = AxisModTypes.Mods.DeadZone;
+        }
+
+        public void Prepare(Tester mapper, int value)
+        {
+            if (runInter)
+            {
+                Modifiers(value, out int tempval, out double axisNorm);
+            }
+            else
+            {
+                double axisDir = value - mid;
+                bool negative = axisDir < 0;
+                double maxDir = (axisDir >= 0 ? max : min) - mid;
+                axisNorm = axisDir / (negative ? -maxDir : maxDir);
+            }
+        }
+
+        public void Event(Tester mapper)
+        {
+            mapper.SetAxisEvent(id, axisNorm);
+        }
+
+        private void SetAxisRange(int min, int max, int mid)
+        {
+            this.min = min;
+            this.max = max;
             if (mid == 0 && min == 0)
             {
                 this.mid = (max + min + 1) / 2;
@@ -37,72 +61,32 @@ namespace mappingtester.AxisActions
             {
                 this.mid = mid;
             }
-
-            deadZone = 0.2;
-            antiDeadZone = 0.2;
-            maxZone = 1.0;
-            CalculateZonePoints();
-            runInter = ShouldInterpolate();
-        }
-
-        public void Event(Tester mapper, int value)
-        {
-            if (runInter)
-            {
-                Modifiers(value, out int tempval, out double axisNorm);
-                mapper.SetAxisEvent(id, axisNorm);
-            }
-            else
-            {
-                double axisNorm = value / (double)max;
-                mapper.SetAxisEvent(id, axisNorm);
-            }
-        }
-
-        private void SetAxisRange(int min, int max)
-        {
-            this.min = min;
-            this.max = max;
         }
 
         public void Modifiers(int value, out int axisOutValue, out double axisNorm)
         {
-            bool inSafeZone = false;
             int axisDir = value - mid;
-            bool negative = axisDir < 0;
-            int currentDead = (!negative ? _deadZoneP : _deadZoneM);
-            inSafeZone = axisDir > currentDead;
-            if (inSafeZone)
-            {
-                int maxDir = (value >= mid ? max : min) - mid;
-                double maxZoneDir = maxDir * maxZone;
+            bool negative = axisDir < mid;
+            int maxDir = (axisDir >= mid ? max : min) - mid;
 
-                double temp = (axisDir - currentDead) / (double)(maxDir - currentDead);
-                axisNorm = (1.0 - antiDeadZone) * temp + antiDeadZone;
-                axisOutValue = (int)(axisNorm * maxDir + mid);
-                if (negative) axisNorm *= -1.0;
+            bool inSafeZone;
+            if ((usedMods & AxisModTypes.Mods.DeadZone) == AxisModTypes.Mods.DeadZone)
+            {
+                deadMod.CalcOutValues(axisDir, maxDir, out axisNorm);
+                inSafeZone = deadMod.inSafeZone;
             }
             else
             {
-                axisNorm = 0.0;
-                axisOutValue = mid;
+                axisNorm = axisDir / (negative ? -maxDir : maxDir);
+                inSafeZone = axisNorm != 0.0;
             }
-        }
 
-        private void CalculateZonePoints()
-        {
-            _deadZoneP = (int)(deadZone * (max - mid));
-            _deadZoneM = (int)(deadZone * (min - mid));
-            _maxZoneP = (int)(maxZone * (max - mid));
-            _maxZoneM = (int)(maxZone * (min - mid));
-            _antiDeadZoneP = (int)(antiDeadZone * (max - mid));
-            _antiDeadZoneM = (int)(antiDeadZone * (min - mid));
-        }
+            if (inSafeZone)
+            {
 
-        private bool ShouldInterpolate()
-        {
-            bool result = deadZone != 0.0 || maxZone != 1.0 || antiDeadZone != 0.0;
-            return result;
+            }
+
+            axisOutValue = (int)(Math.Abs(axisNorm) * maxDir + mid);
         }
     }
 }
