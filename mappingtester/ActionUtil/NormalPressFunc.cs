@@ -6,10 +6,6 @@
         {
         }
 
-        public NormalPressFunc(OutMode mode, uint code) : base(mode, code)
-        {
-        }
-
         public override void Event(Tester mapper, bool active)
         {
             if (this.active != active)

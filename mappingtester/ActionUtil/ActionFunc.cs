@@ -1,62 +1,15 @@
-﻿using static mappingtester.Tester;
+﻿using System.Collections.Generic;
+using static mappingtester.Tester;
 
 namespace mappingtester.ActionUtil
 {
     public abstract class ActionFunc
     {
-        public enum OutMode : uint
-        {
-            None,
-            KB,
-            Mouse,
-            MouseButton,
-            ContBtn,
-            ContAxis,
-        }
-
-        public struct OutputIds
-        {
-            public ushort keyCode;
-            public uint mouseCode;
-            public ButtonAlias buttonId;
-            public uint buttonValue;
-            public AxisAlias axisId;
-            public uint mouseSpeed;
-        }
-
         protected bool active;
-        protected OutMode outMode;
-        //protected uint outId;
-        protected OutputIds outputId;
+        protected List<ActionFuncBind> bindings = new List<ActionFuncBind>();
 
         public ActionFunc()
         {
-        }
-
-        public ActionFunc(OutMode mode, uint code)
-        {
-            switch (mode)
-            {
-                case OutMode.ContBtn:
-                    outputId.buttonValue = code;
-                    break;
-                case OutMode.ContAxis:
-                    outputId.axisId = (AxisAlias)code;
-                    break;
-                case OutMode.None:
-                    break;
-                case OutMode.KB:
-                    outputId.keyCode = (ushort)code;
-                    break;
-                case OutMode.MouseButton:
-                    outputId.mouseCode = code;
-                    break;
-                case OutMode.Mouse:
-                    outputId.mouseSpeed = code;
-                    break;
-                default:
-                    break;
-            }
         }
 
         public abstract void Event(Tester mapper, bool active);
@@ -64,52 +17,60 @@ namespace mappingtester.ActionUtil
 
         protected void SendOutputEvent(Tester mapper)
         {
-            switch (outMode)
+            foreach (ActionFuncBind binding in bindings)
             {
-                case OutMode.None:
-                    break;
-                case OutMode.ContBtn:
-                    mapper.SetButtonEvent(outputId.buttonId, active, outputId.buttonValue);
-                    break;
-                case OutMode.ContAxis:
-                    mapper.SetAxisEvent(outputId.axisId, active ? 1.0 : 0.0);
-                    break;
-                case OutMode.KB:
-                    mapper.SetKeyEvent(outputId.keyCode, active);
-                    break;
-                case OutMode.MouseButton:
-                    mapper.SetMouseButton(outputId.mouseCode, active);
-                    break;
-                //case OutMode.Mouse:
-                //    mapper.SetMouseCusorMovement(0.0, 0.0);
-                //    break;
-                default:
-                    break;
+                switch (binding.outMode)
+                {
+                    case ActionFuncBind.OutMode.None:
+                        break;
+                    case ActionFuncBind.OutMode.ContBtn:
+                        mapper.SetButtonEvent(binding.outputId.buttonId, active,
+                            binding.outputId.buttonValue);
+                        break;
+                    case ActionFuncBind.OutMode.ContAxis:
+                        mapper.SetAxisEvent(binding.outputId.axisId, active ? 1.0 : 0.0);
+                        break;
+                    case ActionFuncBind.OutMode.KB:
+                        mapper.SetKeyEvent(binding.outputId.keyCode, active);
+                        break;
+                    case ActionFuncBind.OutMode.MouseButton:
+                        mapper.SetMouseButton(binding.outputId.mouseCode, active);
+                        break;
+                    //case ActionFuncBind.OutMode.Mouse:
+                    //    mapper.SetMouseCusorMovement(0.0, 0.0);
+                    //    break;
+                    default:
+                        break;
+                }
             }
         }
 
         protected void ReleaseOuputEvent(Tester mapper)
         {
-            switch (outMode)
+            foreach (ActionFuncBind binding in bindings)
             {
-                case OutMode.None:
-                    break;
-                case OutMode.ContBtn:
-                    mapper.SetButtonEvent(outputId.buttonId, active, outputId.buttonValue);
-                    break;
-                case OutMode.ContAxis:
-                    mapper.SetAxisEvent(outputId.axisId, active ? 1.0 : 0.0);
-                    break;
-                case OutMode.KB:
-                    mapper.SetKeyEvent(outputId.keyCode, active);
-                    break;
-                case OutMode.MouseButton:
-                    mapper.SetMouseButton(outputId.mouseCode, active);
-                    break;
-                case OutMode.Mouse:
-                    break;
-                default:
-                    break;
+                switch (binding.outMode)
+                {
+                    case ActionFuncBind.OutMode.None:
+                        break;
+                    case ActionFuncBind.OutMode.ContBtn:
+                        mapper.SetButtonEvent(binding.outputId.buttonId, active,
+                            binding.outputId.buttonValue);
+                        break;
+                    case ActionFuncBind.OutMode.ContAxis:
+                        mapper.SetAxisEvent(binding.outputId.axisId, active ? 1.0 : 0.0);
+                        break;
+                    case ActionFuncBind.OutMode.KB:
+                        mapper.SetKeyEvent(binding.outputId.keyCode, active);
+                        break;
+                    case ActionFuncBind.OutMode.MouseButton:
+                        mapper.SetMouseButton(binding.outputId.mouseCode, active);
+                        break;
+                    case ActionFuncBind.OutMode.Mouse:
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
