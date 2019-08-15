@@ -22,6 +22,7 @@
 
         public void Prepare(Tester mapper, DpadDirections value)
         {
+            _ = mapper;
             activeEvent = false;
 
             if (value != current)
