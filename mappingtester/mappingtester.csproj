@@ -90,6 +90,7 @@
     <Compile Include="ActionSet.cs" />
     <Compile Include="ActionUtil\ActionButton.cs" />
     <Compile Include="ActionUtil\ActionFunc.cs" />
+    <Compile Include="ActionUtil\ActionFuncBind.cs" />
     <Compile Include="ActionUtil\CycleAction.cs" />
     <Compile Include="ActionUtil\FuncConv.cs" />
     <Compile Include="ActionUtil\HoldPressFunc.cs" />

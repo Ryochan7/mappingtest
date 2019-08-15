@@ -18,7 +18,7 @@ namespace mappingtester.ActionUtil
 
         public ActionButton()
         {
-            NormalPressFunc func = new NormalPressFunc(OutMode.KB, 40);
+            NormalPressFunc func = new NormalPressFunc();
             pressFuncs.Add(func);
         }
 
