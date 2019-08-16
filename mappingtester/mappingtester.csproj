@@ -99,6 +99,7 @@
     <Compile Include="AxisModifiers\AxisDeadZone.cs" />
     <Compile Include="AxisModifiers\AxisModTypes.cs" />
     <Compile Include="AxisModifiers\AxisOutCurves.cs" />
+    <Compile Include="ButtonActions\ButtonActionBtn.cs" />
     <Compile Include="ButtonActions\ButtonGenTranslate.cs" />
     <Compile Include="ButtonActions\ButtonTranslate.cs" />
     <Compile Include="DPadActions\DpadActionPad.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Profile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StickActions\StickActionPad.cs" />
     <Compile Include="StickActions\StickMouse.cs" />
     <Compile Include="StickActions\StickTranslate.cs" />
     <Compile Include="StickModifiers\StickDeadZone.cs" />

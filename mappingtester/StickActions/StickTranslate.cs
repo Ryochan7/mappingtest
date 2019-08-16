@@ -29,11 +29,7 @@ namespace mappingtester
         public StickTranslate(Tester.StickAlias id, int min, int max, int mid=0)
         {
             this.id = id;
-            SetAxisRange(min, max);
-            if (mid == 0 && min == 0)
-                axisMid = (max + min + 1) / 2;
-            else
-                axisMid = mid;
+            SetAxisRange(min, max, mid);
 
             //circleDead = true;
             //CalculateZonePoints();
@@ -124,10 +120,14 @@ namespace mappingtester
             mapper.SetStickEvent(id, xNorm, yNorm);
         }
 
-        private void SetAxisRange(int min, int max)
+        private void SetAxisRange(int min, int max, int mid)
         {
             axisMin = min;
             axisMax = max;
+            if (mid == 0 && min == 0)
+                axisMid = (max + min + 1) / 2;
+            else
+                axisMid = mid;
         }
     }
 }

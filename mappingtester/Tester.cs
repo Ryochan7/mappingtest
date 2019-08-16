@@ -462,7 +462,7 @@ namespace mappingtester
             }
         }
 
-        public void SetButtonEvent(ButtonAlias id, bool status, uint btnvalue)
+        public void SetButtonEvent(ButtonAlias _, bool status, uint btnvalue)
         {
             unchecked
             {

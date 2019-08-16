@@ -1,5 +1,4 @@
-﻿
-namespace mappingtester
+﻿namespace mappingtester.ButtonActions
 {
     class ButtonGenTranslate
     {

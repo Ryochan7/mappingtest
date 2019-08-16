@@ -20,9 +20,8 @@
         {
         }
 
-        public void Prepare(Tester mapper, DpadDirections value)
+        public void Prepare(Tester _, DpadDirections value)
         {
-            _ = mapper;
             activeEvent = false;
 
             if (value != current)

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace mappingtester
+﻿namespace mappingtester.ButtonActions
 {
     public class ButtonTranslate
     {
         private Tester.ButtonAlias id;
         private uint value;
 
-        private bool state;
-        public bool IsActive => state;
+        private bool active;
+        public bool IsActive => active;
 
         private bool previousState;
         public bool activeEvent = false;
@@ -23,25 +17,25 @@ namespace mappingtester
             this.value = value;
         }
 
-        public void Prepare(Tester mapper, bool status)
+        public void Prepare(Tester _, bool status)
         {
-            if (status != state)
+            if (status != active)
             {
-                previousState = state;
-                state = status;
+                previousState = active;
+                active = status;
                 activeEvent = true;
             }
         }
 
         public void Event(Tester mapper)
         {
-            mapper.SetButtonEvent(id, state, value);
-            if (!state) activeEvent = false;
+            mapper.SetButtonEvent(id, active, value);
+            if (!active) activeEvent = false;
         }
 
         public void Release(Tester mapper)
         {
-            state = false;
+            active = false;
             activeEvent = false;
             mapper.SetButtonEvent(id, false, value);
         }

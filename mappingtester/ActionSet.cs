@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using mappingtester.DPadActions;
 using mappingtester.AxisActions;
+using mappingtester.ButtonActions;
 
 namespace mappingtester
 {

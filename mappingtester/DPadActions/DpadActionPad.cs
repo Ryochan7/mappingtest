@@ -47,7 +47,7 @@ namespace mappingtester.DPadActions
         {
         }
 
-        public void Prepare(Tester mapper, DpadDirections value)
+        public void Prepare(Tester _, DpadDirections value)
         {
             activeEvent = false;
 
