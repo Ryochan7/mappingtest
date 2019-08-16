@@ -2,9 +2,9 @@
 using mappingtester.StickModifiers;
 using mappingtester.AxisModifiers;
 
-namespace mappingtester
+namespace mappingtester.StickActions
 {
-    public class StickMouse
+    public class StickMouse : StickActionTrans
     {
         private const int MOUSESPEEDFACTOR = 20;
         private const double MOUSESTICKOFFSET = 0.0495;
@@ -28,7 +28,6 @@ namespace mappingtester
         private int mouseYSpeed = MOUSESPEED;
 
         private double xNorm = 0.0, yNorm = 0.0;
-        public bool activeEvent = false;
 
         public StickMouse(int min, int max, int mid = 0)
         {
@@ -44,7 +43,7 @@ namespace mappingtester
             usedMods = StickModTypes.Mods.DeadZone | StickModTypes.Mods.OutCurve;
         }
 
-        public void Prepare(Tester mapper, int axisXVal, int axisYVal)
+        public override void Prepare(Tester mapper, int axisXVal, int axisYVal)
         {
             xNorm = yNorm = 0.0;
 
@@ -70,7 +69,7 @@ namespace mappingtester
             activeEvent = xNorm != 0.0 || yNorm != 0.0;
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             if (xNorm != 0.0 || yNorm != 0.0)
             {
@@ -128,7 +127,7 @@ namespace mappingtester
             axisYOut = (int)(yNorm * maxDirY + axisMid);
         }
 
-        public void Release(Tester mapper)
+        public override void Release(Tester mapper)
         {
             activeEvent = false;
             xNorm = 0.0;

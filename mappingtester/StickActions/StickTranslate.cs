@@ -2,9 +2,9 @@
 using mappingtester.StickModifiers;
 using mappingtester.AxisModifiers;
 
-namespace mappingtester
+namespace mappingtester.StickActions
 {
-    public class StickTranslate
+    public class StickTranslate : StickActionTrans
     {
         private Tester.StickAlias id;
 
@@ -24,7 +24,6 @@ namespace mappingtester
         //private int previousYVal;
 
         private double xNorm = 0.0, yNorm = 0.0;
-        public bool activeEvent = false;
 
         public StickTranslate(Tester.StickAlias id, int min, int max, int mid=0)
         {
@@ -38,7 +37,7 @@ namespace mappingtester
             usedMods = StickModTypes.Mods.DeadZone | StickModTypes.Mods.OutCurve;
         }
 
-        public void Prepare(Tester mapper, int axisXVal, int axisYVal)
+        public override void Prepare(Tester mapper, int axisXVal, int axisYVal)
         {
             xNorm = 0.0; yNorm = 0.0;
 
@@ -64,7 +63,7 @@ namespace mappingtester
             activeEvent = true;
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             mapper.SetStickEvent(id, xNorm, yNorm);
             activeEvent = false;
@@ -113,7 +112,7 @@ namespace mappingtester
             axisYOut = (int)(Math.Abs(yNorm) * maxDirY + axisMid);
         }
 
-        public void Release(Tester mapper)
+        public override void Release(Tester mapper)
         {
             activeEvent = false;
             xNorm = 0.0; yNorm = 0.0;

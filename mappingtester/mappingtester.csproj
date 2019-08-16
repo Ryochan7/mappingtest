@@ -131,6 +131,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StickActions\StickActionPad.cs" />
+    <Compile Include="StickActions\StickActionTrans.cs" />
     <Compile Include="StickActions\StickMouse.cs" />
     <Compile Include="StickActions\StickTranslate.cs" />
     <Compile Include="StickModifiers\StickDeadZone.cs" />

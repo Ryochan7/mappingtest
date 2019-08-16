@@ -3,6 +3,7 @@ using Nefarius.ViGEm.Client.Targets.Xbox360;
 using mappingtester.DPadActions;
 using mappingtester.AxisActions;
 using mappingtester.ButtonActions;
+using mappingtester.StickActions;
 
 namespace mappingtester
 {
@@ -17,8 +18,8 @@ namespace mappingtester
 
         public ButtonActionTrans testABtn;
         public ButtonActionTrans testBBtn;
-        public StickTranslate testLeftStick;
-        public StickMouse testRightStick;
+        public StickActionTrans testLeftStick;
+        public StickActionTrans testRightStick;
         public TriggerTranslate testLT;
         public TriggerTranslate testRT;
         public ButtonActionTrans testLBBtn;
@@ -44,8 +45,9 @@ namespace mappingtester
             testABtn = new ButtonTranslate(Tester.ButtonAlias.A, (uint)Xbox360Buttons.A);
             testBBtn = new ButtonTranslate(Tester.ButtonAlias.B, (uint)Xbox360Buttons.B);
             testLeftStick = new StickTranslate(Tester.StickAlias.LeftStick, 0, 255);
-            testRightStick = new StickMouse(0, 255);
-            testRightStick.SetSpeed(100, 100);
+            StickMouse tempSM = new StickMouse(0, 255);
+            tempSM.SetSpeed(100, 100);
+            testRightStick = tempSM;
             testLT = new TriggerTranslate(Tester.AxisAlias.LeftTrigger, 0, 255);
             testRT = new TriggerTranslate(Tester.AxisAlias.RightTrigger, 0, 255);
             testLBBtn = new ButtonTranslate(Tester.ButtonAlias.LeftShoulder, (uint)Xbox360Buttons.LeftShoulder);
