@@ -1,15 +1,9 @@
 ﻿namespace mappingtester.ButtonActions
 {
-    public class ButtonTranslate
+    public class ButtonTranslate : ButtonActionTrans
     {
         private Tester.ButtonAlias id;
         private uint value;
-
-        private bool active;
-        public bool IsActive => active;
-
-        private bool previousState;
-        public bool activeEvent = false;
 
         public ButtonTranslate(Tester.ButtonAlias id, uint value)
         {
@@ -17,7 +11,7 @@
             this.value = value;
         }
 
-        public void Prepare(Tester _, bool status)
+        public override void Prepare(Tester _, bool status)
         {
             if (status != active)
             {
@@ -27,13 +21,13 @@
             }
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             mapper.SetButtonEvent(id, active, value);
             if (!active) activeEvent = false;
         }
 
-        public void Release(Tester mapper)
+        public override void Release(Tester mapper)
         {
             active = false;
             activeEvent = false;

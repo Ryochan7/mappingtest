@@ -2,26 +2,18 @@
 
 namespace mappingtester.ButtonActions
 {
-    public class ButtonActionBtn
+    public class ButtonActionBtn : ButtonActionTrans
     {
-        private Tester.ButtonAlias id;
-        private bool active;
-        public bool IsActive => active;
-
-        private bool previousState;
-        public bool activeEvent = false;
-
         private ActionButton actBtn;
 
-        public ButtonActionBtn(Tester.ButtonAlias id)
+        public ButtonActionBtn()
         {
-            this.id = id;
             actBtn = new ActionButton();
             NormalPressFunc func = new NormalPressFunc();
             actBtn.AddActionFunc(func);
         }
 
-        public void Prepare(Tester _, bool active)
+        public override void Prepare(Tester _, bool active)
         {
             if (this.active != active)
             {
@@ -31,19 +23,17 @@ namespace mappingtester.ButtonActions
             }
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             actBtn.Event(mapper, active);
-            //mapper.SetButtonEvent(id, active, value);
             if (!active) activeEvent = false;
         }
 
-        public void Release(Tester mapper)
+        public override void Release(Tester mapper)
         {
             active = false;
             activeEvent = false;
             actBtn.Release(mapper);
-            //mapper.SetButtonEvent(id, false, value);
         }
     }
 }

@@ -100,6 +100,7 @@
     <Compile Include="AxisModifiers\AxisModTypes.cs" />
     <Compile Include="AxisModifiers\AxisOutCurves.cs" />
     <Compile Include="ButtonActions\ButtonActionBtn.cs" />
+    <Compile Include="ButtonActions\ButtonActionTrans.cs" />
     <Compile Include="ButtonActions\ButtonGenTranslate.cs" />
     <Compile Include="ButtonActions\ButtonTranslate.cs" />
     <Compile Include="DPadActions\DpadActionPad.cs" />

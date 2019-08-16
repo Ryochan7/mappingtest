@@ -15,20 +15,20 @@ namespace mappingtester
         public ActionLayer currentActionLayer;
         private int currentLayerNum = 0;
 
-        public ButtonTranslate testABtn;
-        public ButtonTranslate testBBtn;
+        public ButtonActionTrans testABtn;
+        public ButtonActionTrans testBBtn;
         public StickTranslate testLeftStick;
         public StickMouse testRightStick;
         public TriggerTranslate testLT;
         public TriggerTranslate testRT;
-        public ButtonTranslate testLBBtn;
-        public ButtonTranslate testRBBtn;
-        public ButtonTranslate testBackBtn;
-        public ButtonTranslate testStartBtn;
-        public ButtonTranslate testXBtn;
-        public ButtonTranslate testYBtn;
-        public ButtonTranslate testLThumbBtn;
-        public ButtonTranslate testRThumbBtn;
+        public ButtonActionTrans testLBBtn;
+        public ButtonActionTrans testRBBtn;
+        public ButtonActionTrans testBackBtn;
+        public ButtonActionTrans testStartBtn;
+        public ButtonActionTrans testXBtn;
+        public ButtonActionTrans testYBtn;
+        public ButtonActionTrans testLThumbBtn;
+        public ButtonActionTrans testRThumbBtn;
         public DPadTranslate testDpad;
 
         public string DisplayName { get => displayName; set => displayName = value; }
