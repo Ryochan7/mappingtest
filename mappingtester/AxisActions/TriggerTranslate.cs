@@ -2,7 +2,7 @@
 
 namespace mappingtester.AxisActions
 {
-    public class TriggerTranslate
+    public class TriggerTranslate : AxisActionTrans
     {
         public enum ActivateStyle : uint
         {
@@ -56,7 +56,7 @@ namespace mappingtester.AxisActions
             usedMods = AxisModTypes.Mods.DeadZone;
         }
 
-        public void Prepare(Tester mapper, int value)
+        public override void Prepare(Tester mapper, int value)
         {
             if (useAnalog)
             {
@@ -99,11 +99,12 @@ namespace mappingtester.AxisActions
             activeEvent = true;
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             if (useAnalog)
             {
                 mapper.SetAxisEvent(id, axisNorm);
+                if (axisNorm == 0.0) activeEvent = false;
             }
             else
             {
@@ -114,29 +115,14 @@ namespace mappingtester.AxisActions
                 }
 
                 if (activeButton != null)
+                {
                     activeButton.Event(mapper, currentValue);
+                    activeEvent = false;
+                }
             }
         }
 
-        private void SetAxisRange(int min, int max)
-        {
-            this.min = min;
-            this.max = max;
-        }
-
-        public void RunModifiers(int value, out double axisNorm)
-        {
-            double tempNorm;
-            if ((usedMods & AxisModTypes.Mods.DeadZone) ==
-                AxisModTypes.Mods.DeadZone)
-                deadZone.CalcOutValues(value, max, out tempNorm);
-            else
-                tempNorm = value / (double)max;
-
-            axisNorm = tempNorm;
-        }
-
-        public void Release(Tester mapper)
+        public override void Release(Tester mapper)
         {
             if (useAnalog)
             {
@@ -150,6 +136,25 @@ namespace mappingtester.AxisActions
 
             axisNorm = 0.0;
             activeEvent = false;
+        }
+
+        /*private void SetAxisRange(int min, int max)
+        {
+            this.min = min;
+            this.max = max;
+        }
+        */
+
+        public void RunModifiers(int value, out double axisNorm)
+        {
+            double tempNorm;
+            if ((usedMods & AxisModTypes.Mods.DeadZone) ==
+                AxisModTypes.Mods.DeadZone)
+                deadZone.CalcOutValues(value, max, out tempNorm);
+            else
+                tempNorm = value / (double)max;
+
+            axisNorm = tempNorm;
         }
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 namespace mappingtester.AxisActions
 {
-    class AxisTranslate
+    public class AxisTranslate : AxisActionTrans
     {
         private Tester.AxisAlias id;
 
@@ -29,7 +29,7 @@ namespace mappingtester.AxisActions
             usedMods = AxisModTypes.Mods.DeadZone;
         }
 
-        public void Prepare(Tester mapper, int value)
+        public override void Prepare(Tester mapper, int value)
         {
             if (runInter)
             {
@@ -44,9 +44,17 @@ namespace mappingtester.AxisActions
             }
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             mapper.SetAxisEvent(id, axisNorm);
+            if (axisNorm == 0.0) activeEvent = false;
+        }
+
+        public override void Release(Tester mapper)
+        {
+            mapper.SetAxisEvent(id, 0.0);
+            axisNorm = 0.0;
+            activeEvent = false;
         }
 
         private void SetAxisRange(int min, int max, int mid)

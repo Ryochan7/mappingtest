@@ -95,6 +95,8 @@
     <Compile Include="ActionUtil\FuncConv.cs" />
     <Compile Include="ActionUtil\HoldPressFunc.cs" />
     <Compile Include="ActionUtil\NormalPressFunc.cs" />
+    <Compile Include="AxisActions\AxisActions.cs" />
+    <Compile Include="AxisActions\AxisActionTrans.cs" />
     <Compile Include="AxisActions\AxisTranslate.cs" />
     <Compile Include="AxisModifiers\AxisDeadZone.cs" />
     <Compile Include="AxisModifiers\AxisModTypes.cs" />
