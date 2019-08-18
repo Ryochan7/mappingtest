@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace mappingtester.StickActions
 {
-    public class StickActionPad
+    public class StickActionPad : StickActionTrans
     {
         public enum DPadMode : uint
         {
@@ -76,7 +76,7 @@ namespace mappingtester.StickActions
             usedMods = StickModTypes.Mods.DeadZone | StickModTypes.Mods.OutCurve;
         }
 
-        public void Prepare(Tester mapper, int axisXVal, int axisYVal)
+        public override void Prepare(Tester mapper, int axisXVal, int axisYVal)
         {
             xNorm = 0.0; yNorm = 0.0;
 
@@ -112,7 +112,7 @@ namespace mappingtester.StickActions
             activeEvent = true;
         }
 
-        public void Event(Tester mapper)
+        public override void Event(Tester mapper)
         {
             if (previousBtn != null)
             {
@@ -126,7 +126,7 @@ namespace mappingtester.StickActions
             activeEvent = false;
         }
 
-        public void Release(Tester mapper)
+        public override void Release(Tester mapper)
         {
             if (activeDir != DpadDirections.Centered)
             {

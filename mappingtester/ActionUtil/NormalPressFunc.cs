@@ -2,10 +2,6 @@
 {
     public class NormalPressFunc : ActionFunc
     {
-        public NormalPressFunc() : base()
-        {
-        }
-
         public override void Event(Tester mapper, bool active)
         {
             if (this.active != active)

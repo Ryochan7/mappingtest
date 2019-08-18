@@ -27,7 +27,6 @@ namespace mappingtester.ActionUtil
             else
             {
                 currentIndex = --currentIndex % actList.Count;
-                
             }
 
             currentFunc = actList[currentIndex];
