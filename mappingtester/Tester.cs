@@ -20,12 +20,14 @@ namespace mappingtester
     {
         public enum StickAlias : uint
         {
+            None,
             LeftStick,
             RightStick
         }
 
         public enum AxisAlias: uint
         {
+            None,
             LeftTrigger,
             RightTrigger,
             LeftX,
@@ -36,6 +38,7 @@ namespace mappingtester
 
         public enum ButtonAlias : uint
         {
+            None,
             A,
             B,
             X,
@@ -55,7 +58,8 @@ namespace mappingtester
 
         public enum DPadAlias : uint
         {
-            Dpad1
+            None,
+            Dpad1,
         }
 
         [Flags]

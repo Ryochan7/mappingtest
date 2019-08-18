@@ -12,7 +12,17 @@ namespace mappingtester.AxisActions
         private int mid;
 
         private AxisModTypes.Mods usedMods;
+        public AxisModTypes.Mods UsedMods
+        {
+            get => usedMods;
+            set
+            {
+                usedMods = value;
+                runInter = usedMods != AxisModTypes.Mods.None;
+            }
+        }
         private AxisDeadZone deadMod;
+        public AxisDeadZone DeadMod => deadMod;
 
         private double axisNorm;
 
@@ -25,7 +35,7 @@ namespace mappingtester.AxisActions
             SetAxisRange(min, max, mid);
 
             deadMod = new AxisDeadZone(0.2, 1.0, 0.2);
-            runInter = deadMod.ShouldInterpolate();
+            runInter = usedMods != AxisModTypes.Mods.None;
             usedMods = AxisModTypes.Mods.DeadZone;
         }
 
