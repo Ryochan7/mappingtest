@@ -84,6 +84,7 @@ namespace mappingtester
         private ushort tempbuttons;
         private Dictionary<ushort, uint> keysCount = new Dictionary<ushort, uint>();
         private bool keyActive = false;
+        private DS4Windows.DS4State currentstate;
 
         //private StickTranslate testLeftStick = new StickTranslate(StickAlias.LeftStick, 0, 255);
         //private StickTranslate testRightStick = new StickTranslate(StickAlias.RightStick, 0, 255);
@@ -203,6 +204,7 @@ namespace mappingtester
         {
             DS4Windows.DS4Device dev = sender;
             DS4Windows.DS4State current = dev.getCurrentStateRef();
+            currentstate = current;
             DS4Windows.DS4State previous = dev.getPreviousStateRef();
             Mapping(current, previous);
             xbux.SendReport(reportx);
@@ -422,6 +424,11 @@ namespace mappingtester
             */
 
             reportx.Buttons = tempbuttons;
+        }
+
+        public double GetElapsed()
+        {
+            return currentstate.elapsedTime;
         }
 
         public void SendKeyboardEvents()

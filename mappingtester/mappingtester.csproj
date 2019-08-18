@@ -122,6 +122,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GyroActions\GyroMouse.cs" />
+    <Compile Include="GyroActions\GyroTilt.cs" />
     <Compile Include="HidLibrary\Extensions.cs" />
     <Compile Include="HidLibrary\HidDevice.cs" />
     <Compile Include="HidLibrary\HidDeviceAttributes.cs" />
@@ -170,8 +172,6 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GyroActions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
