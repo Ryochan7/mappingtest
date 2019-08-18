@@ -26,8 +26,9 @@
 
         public double CalcOutValue(double currentAxisNorm)
         {
-            currentAxisNorm = currentAxisNorm * sensMulti;
-            double axisNorm = currentAxisNorm > 1.0 ? 1.0 : (currentAxisNorm < -1.0) ? -1.0 : currentAxisNorm;
+            currentAxisNorm *= sensMulti;
+            double axisNorm = currentAxisNorm > 1.0 ? 1.0 :
+                (currentAxisNorm < -1.0) ? -1.0 : currentAxisNorm;
             return axisNorm;
         }
     }

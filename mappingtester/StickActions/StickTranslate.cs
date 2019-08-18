@@ -17,6 +17,14 @@ namespace mappingtester.StickActions
         private AxisOutCurves.Curve outCurve =
             AxisOutCurves.Curve.Linear;
 
+        private AxisSensMod xsensMod = new AxisSensMod();
+        public AxisSensMod XSensMod => xsensMod;
+        private AxisSensMod ysensMod = new AxisSensMod();
+        public AxisSensMod YSensMod => ysensMod;
+
+        //private bool invertX;
+        //private bool invertY;
+
         //private bool circleDead;
         private bool runInter = false;
 
@@ -33,8 +41,8 @@ namespace mappingtester.StickActions
             //circleDead = true;
             //CalculateZonePoints();
             deadMod = new StickDeadZone(0.05, 1.0, 0.0);
-            runInter = deadMod.ShouldInterpolate();
             usedMods = StickModTypes.Mods.DeadZone | StickModTypes.Mods.OutCurve;
+            runInter = usedMods != StickModTypes.Mods.None;
         }
 
         public override void Prepare(Tester mapper, int axisXVal, int axisYVal)
@@ -43,10 +51,10 @@ namespace mappingtester.StickActions
 
             if (runInter)
             {
-                int axisXTemp = 0, axisYTemp = 0;
-                RunModifiers(axisXVal, axisYVal, out axisXTemp, out axisYTemp,
+                //int axisXTemp = 0, axisYTemp = 0;
+                RunModifiers(axisXVal, axisYVal, out _, out _,
                     out xNorm, out yNorm);
-                axisXVal = axisXTemp; axisYVal = axisYTemp;
+                //axisXVal = axisXTemp; axisYVal = axisYTemp;
             }
             else
             {
@@ -72,6 +80,8 @@ namespace mappingtester.StickActions
         private void RunModifiers(int axisXVal, int axisYVal,
             out int axisXOut, out int axisYOut, out double xNorm, out double yNorm)
         {
+            const StickModTypes.Mods nonDead = ~StickModTypes.Mods.DeadZone;
+
             int axisXDir = axisXVal - axisMid, axisYDir = axisYVal - axisMid;
 
             bool xNegative = axisXDir < 0;
@@ -93,19 +103,20 @@ namespace mappingtester.StickActions
                 inSafeZone = xNorm != 0.0 || yNorm != 0.0;
             }
 
-            if (inSafeZone)
+            if (inSafeZone && (usedMods & nonDead) != StickModTypes.Mods.None)
             {
+                if ((usedMods & StickModTypes.Mods.Sensitivity) == StickModTypes.Mods.Sensitivity)
+                {
+                    xNorm = xsensMod.CalcOutValue(xNorm);
+                    yNorm = ysensMod.CalcOutValue(yNorm);
+                }
+
                 if ((usedMods & StickModTypes.Mods.OutCurve) == StickModTypes.Mods.OutCurve &&
                     outCurve != AxisOutCurves.Curve.Linear)
                 {
                     xNorm = AxisOutCurves.CalcOutValue(outCurve, xNorm);
                     yNorm = AxisOutCurves.CalcOutValue(outCurve, yNorm);
                 }
-            }
-            else
-            {
-                xNorm = 0.0;
-                yNorm = 0.0;
             }
 
             axisXOut = (int)(Math.Abs(xNorm) * maxDirX + axisMid);
