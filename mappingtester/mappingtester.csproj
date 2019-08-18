@@ -101,6 +101,7 @@
     <Compile Include="AxisModifiers\AxisDeadZone.cs" />
     <Compile Include="AxisModifiers\AxisModTypes.cs" />
     <Compile Include="AxisModifiers\AxisOutCurves.cs" />
+    <Compile Include="AxisModifiers\AxisSensMod.cs" />
     <Compile Include="ButtonActions\ButtonActionBtn.cs" />
     <Compile Include="ButtonActions\ButtonActionTrans.cs" />
     <Compile Include="ButtonActions\ButtonGenTranslate.cs" />

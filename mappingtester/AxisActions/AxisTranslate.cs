@@ -23,6 +23,12 @@ namespace mappingtester.AxisActions
         }
         private AxisDeadZone deadMod;
         public AxisDeadZone DeadMod => deadMod;
+        private AxisSensMod sensMod = new AxisSensMod();
+        public AxisSensMod SensMod => sensMod;
+
+        private AxisOutCurves.Curve outCurve =
+            AxisOutCurves.Curve.Linear;
+        public AxisOutCurves.Curve OutCurve { get => outCurve; set => outCurve = value; }
 
         private double axisNorm;
 
@@ -83,6 +89,8 @@ namespace mappingtester.AxisActions
 
         public void Modifiers(int value, out int axisOutValue, out double axisNorm)
         {
+            const AxisModTypes.Mods nonDead = ~AxisModTypes.Mods.DeadZone;
+
             int axisDir = value - mid;
             bool negative = axisDir < mid;
             int maxDir = (axisDir >= mid ? max : min) - mid;
@@ -99,9 +107,19 @@ namespace mappingtester.AxisActions
                 inSafeZone = axisNorm != 0.0;
             }
 
-            if (inSafeZone)
+            if (inSafeZone && (usedMods & nonDead) != AxisModTypes.Mods.None)
             {
+                if ((usedMods & AxisModTypes.Mods.Sensitivity) == AxisModTypes.Mods.Sensitivity)
+                {
+                    double currentNorm = axisNorm;
+                    axisNorm = sensMod.CalcOutValue(currentNorm);
+                }
 
+                if ((usedMods & AxisModTypes.Mods.OutCurve) == AxisModTypes.Mods.OutCurve &&
+                    outCurve != AxisOutCurves.Curve.Linear)
+                {
+                    axisNorm = AxisOutCurves.CalcOutValue(outCurve, axisNorm);
+                }
             }
 
             axisOutValue = (int)(Math.Abs(axisNorm) * maxDir + mid);

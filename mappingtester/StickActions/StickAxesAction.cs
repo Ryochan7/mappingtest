@@ -72,6 +72,7 @@ namespace mappingtester.StickActions
         {
             if (xAxisAct.activeEvent) xAxisAct.Event(mapper);
             if (yAxisAct.activeEvent) yAxisAct.Event(mapper);
+            activeEvent = false;
         }
 
         public override void Release(Tester mapper)

@@ -49,6 +49,7 @@
                 mapper.SetDPadEvent(DpadDirections.Centered);
                 current = DpadDirections.Centered;
                 activeDir = current;
+                activeEvent = false;
             }
         }
 
