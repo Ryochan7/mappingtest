@@ -1,5 +1,5 @@
-﻿using mappingtester.AxisModifiers;
-using System;
+﻿using System;
+using mappingtester.AxisModifiers;
 
 namespace mappingtester.AxisActions
 {

@@ -22,8 +22,8 @@ namespace mappingtester.StickActions
         private AxisSensMod ysensMod = new AxisSensMod();
         public AxisSensMod YSensMod => ysensMod;
 
-        //private bool invertX;
-        //private bool invertY;
+        private bool invertX;
+        private bool invertY;
 
         //private bool circleDead;
         private bool runInter = false;
@@ -64,8 +64,10 @@ namespace mappingtester.StickActions
                 int maxDirX = (axisXVal >= axisMid ? axisMax : axisMin) - axisMid;
                 int maxDirY = (axisYVal >= axisMid ? axisMax : axisMin) - axisMid;
 
-                xNorm = (axisXDir / (double)maxDirX) * (xNegative ? -1.0 : 1.0);
-                yNorm = (axisYDir / (double)maxDirY) * (yNegative ? -1.0 : 1.0);
+                xNorm = axisXDir / (double)maxDirX * (xNegative ? -1.0 : 1.0);
+                if (xNorm != 0.0 && invertX) xNorm *= -1.0;
+                yNorm = axisYDir / (double)maxDirY * (yNegative ? -1.0 : 1.0);
+                if (yNorm != 0.0 && invertY) yNorm *= -1.0;
             }
 
             activeEvent = true;
@@ -117,6 +119,20 @@ namespace mappingtester.StickActions
                     xNorm = AxisOutCurves.CalcOutValue(outCurve, xNorm);
                     yNorm = AxisOutCurves.CalcOutValue(outCurve, yNorm);
                 }
+            }
+
+            if (xNorm != 0.0 && invertX)
+            {
+                xNorm *= -1.0;
+                xNegative = !xNegative;
+                maxDirX = (!xNegative ? axisMax : axisMin) - axisMid;
+            }
+
+            if (yNorm != 0.0 && invertY)
+            {
+                yNorm *= -1.0;
+                yNegative = !yNegative;
+                maxDirY = (!yNegative ? axisMax : axisMin) - axisMid;
             }
 
             axisXOut = (int)(Math.Abs(xNorm) * maxDirX + axisMid);
