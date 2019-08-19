@@ -146,6 +146,9 @@
     <Compile Include="Tester.cs" />
     <Compile Include="AxisActions\TriggerButton.cs" />
     <Compile Include="AxisActions\TriggerTranslate.cs" />
+    <Compile Include="TouchpadActions\TouchActionPad.cs" />
+    <Compile Include="TouchpadActions\TouchMouse.cs" />
+    <Compile Include="TouchpadActions\TouchStickAction.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VirtButtonBinding.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
