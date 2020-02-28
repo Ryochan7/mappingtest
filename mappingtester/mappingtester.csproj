@@ -67,8 +67,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Nefarius.ViGEm.Client">
-      <HintPath>libs\x64\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
+    <Reference Include="Nefarius.ViGEm.Client" Condition="'$(Platform)' == 'x64'&#xD;&#xA;">
+      <HintPath>.\libs\x64\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Nefarius.ViGEm.Client" Condition="'$(Platform)' == 'x86'&#xD;&#xA;">
+      <HintPath>.\libs\x86\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
